@@ -3,6 +3,7 @@ from app.models.db_models import Entry, Snippet, db
 
 bp = Blueprint('routes', __name__)
 
+# Insertion 
 
 @bp.route('/snippets', methods=['POST'])
 def create_code():
@@ -95,3 +96,29 @@ def create_entry():
         'created_at': entry.created_at.isoformat() if entry.created_at else None,
         'updated_at': entry.updated_at.isoformat() if entry.updated_at else None,
     }), 201
+
+# Display
+@bp.route('/entries', methods=['GET'])
+def get_entries():
+    """Retrieve all entries.
+
+    Returns a list of entries (JSON) with status 200 on success, or JSON error with
+    appropriate status code.
+    """
+    try:
+        entries = Entry.query.all()
+    except Exception as exc:
+        return jsonify({'error': 'Database error', 'details': str(exc)}), 500
+
+    entries_list = []
+    for entry in entries:
+        entries_list.append({
+            'id': entry.id,
+            'title': entry.title,
+            'content': entry.content,
+            'tags': entry.tags,
+            'created_at': entry.created_at.isoformat() if entry.created_at else None,
+            'updated_at': entry.updated_at.isoformat() if entry.updated_at else None,
+        })
+
+    return jsonify(entries_list), 200

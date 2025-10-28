@@ -8,7 +8,7 @@ app.config.from_object(Config)
 db.init_app(app)
 
 # Register blueprints
-app.register_blueprint(routes_bp)
+app.register_blueprint(routes_bp) #Register the route blueprint
 
 if __name__ == "__main__":
     try:
