@@ -1,1 +1,8 @@
-# Git ignore file
+# Git ignore file for flask
+__pycache__/
+.env.example
+
+
+
+
+
