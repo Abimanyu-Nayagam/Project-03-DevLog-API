@@ -106,7 +106,7 @@ def get_entries():
     appropriate status code.
     """
     try:
-        entries = Entry.query.all()
+        entries = Entry.query.all() # query.all to get all entries
     except Exception as exc:
         return jsonify({'error': 'Database error', 'details': str(exc)}), 500
 
@@ -122,3 +122,29 @@ def get_entries():
         })
 
     return jsonify(entries_list), 200
+
+@bp.route('/snippets', methods=['GET'])
+def get_snippets():
+    """Retrieve all snippets.
+
+    Returns a list of snippets (JSON) with status 200 on success, or JSON error with
+    appropriate status code.
+    """
+    try:
+        snippets = Snippet.query.all() # query.all to get all code snippets
+    except Exception as exc:
+        return jsonify({'error': 'Database error', 'details': str(exc)}), 500
+
+    snippets_list = []
+    for snippets in snippets:
+        snippets_list.append({
+            'id': snippets.id,
+            'title': snippets.title,
+            'snippet': snippets.code,
+            'language': snippets.language,
+            'tags': snippets.tags,
+            'created_at': snippets.created_at.isoformat() if snippets.created_at else None,
+            'updated_at': snippets.updated_at.isoformat() if snippets.updated_at else None,
+        })
+
+    return jsonify(snippets_list), 200

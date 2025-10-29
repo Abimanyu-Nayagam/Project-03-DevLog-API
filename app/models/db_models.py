@@ -31,3 +31,5 @@ class Snippet(db.Model):
 
     def __repr__(self):
         return f"<Snippet {self.title}>"
+    
+
