@@ -231,3 +231,67 @@ def delete_entries(id):
         return jsonify({'error': 'Database error', 'details': str(exc)}), 500
 
     return jsonify({'Success': f'Deleted Entry -- {id}'}), 200
+
+#update exisitng entry
+@bp.route('/api/v1/entries/<int:id>', methods=['PATCH'])
+def update_entry(id):
+    """Update an existing entry by ID."""
+    data = request.get_json()
+    if not data:
+        return jsonify({'error': 'Request must be JSON'}), 400
+
+    entry = Entry.query.get(id)
+    if not entry:
+        return jsonify({'error': 'Entry not found'}), 404
+
+    # Update only provided fields
+    entry.title = data.get('title', entry.title)
+    entry.content = data.get('content', entry.content)
+    entry.tags = data.get('tags', entry.tags)
+
+    try:
+        db.session.commit()
+        return jsonify({
+            'id': entry.id,
+            'title': entry.title,
+            'content': entry.content,
+            'tags': entry.tags,
+            'created_at': entry.created_at.isoformat() if entry.created_at else None,
+            'updated_at': entry.updated_at.isoformat() if entry.updated_at else None,
+        }), 200
+    except Exception as exc:
+        db.session.rollback()
+        return jsonify({'error': 'Database error', 'details': str(exc)}), 500
+
+
+@bp.route('/api/v1/snippets/<int:id>', methods=['PATCH'])
+def update_snippet(id):
+    """Update an existing snippet by ID."""
+    data = request.get_json()
+    if not data:
+        return jsonify({'error': 'Request must be JSON'}), 400
+
+    snippet = Snippet.query.get(id)
+    if not snippet:
+        return jsonify({'error': 'Snippet not found'}), 404
+
+    snippet.title = data.get('title', snippet.title)
+    snippet.code = data.get('snippets', snippet.code)
+    snippet.tags = data.get('tags', snippet.tags)
+    snippet.language = data.get('language', snippet.language)
+
+    try:
+        db.session.commit()
+        return jsonify({
+            'id': snippet.id,
+            'title': snippet.title,
+            'snippet': snippet.code,
+            'language': snippet.language,
+            'tags': snippet.tags,
+            'created_at': snippet.created_at.isoformat() if snippet.created_at else None,
+            'updated_at': snippet.updated_at.isoformat() if snippet.updated_at else None,
+        }), 200
+    except Exception as exc:
+        db.session.rollback()
+        return jsonify({'error': 'Database error', 'details': str(exc)}), 500
+
