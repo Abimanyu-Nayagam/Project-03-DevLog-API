@@ -1,6 +1,7 @@
 from flask import Flask
 from app.models.db_models import db
 from app.routes.route import bp as routes_bp
+from app.routes.export_route import e_bp as export_routes_bp
 from config.config import Config
 
 app = Flask(__name__)
@@ -9,6 +10,7 @@ db.init_app(app)
 
 # Register blueprints
 app.register_blueprint(routes_bp) #Register the route blueprint
+app.register_blueprint(export_routes_bp) #Register the route blueprint
 
 if __name__ == "__main__":
     try:
