@@ -5,7 +5,7 @@ bp = Blueprint('routes', __name__)
 
 # Insertion 
 
-@bp.route('api/v1/snippets', methods=['POST'])
+@bp.route('/api/v1/snippets', methods=['POST'])
 def create_code():
     """Insert a new Code.
 
@@ -52,7 +52,7 @@ def create_code():
     }), 201
 
 
-@bp.route('api/v1/entries', methods=['POST'])
+@bp.route('/api/v1/entries', methods=['POST'])
 def create_entry():
     """Insert a new Entry.
 
@@ -98,7 +98,7 @@ def create_entry():
     }), 201
 
 # Display
-@bp.route('api/v1/entries', methods=['GET'])
+@bp.route('/api/v1/entries', methods=['GET'])
 def get_entries():
     """Retrieve all entries.
 
@@ -123,7 +123,7 @@ def get_entries():
 
     return jsonify(entries_list), 200
 
-@bp.route('api/v1/snippets', methods=['GET'])
+@bp.route('/api/v1/snippets', methods=['GET'])
 def get_snippets():
     """Retrieve all snippets.
 
@@ -148,3 +148,86 @@ def get_snippets():
         })
 
     return jsonify(snippets_list), 200
+
+@bp.route('/api/v1/entries/<int:id>', methods=['GET'])
+def get_entry(id):
+    """Retrieve an entry by ID.
+    Returns the entry (JSON) with status 200 on success, or JSON error with appropriate status code.
+    """
+    try:
+        entry = Entry.query.get(id)
+        if not entry:
+            return jsonify({'error': 'Entry not found'}), 404
+    except Exception as exc:
+        return jsonify({'error': 'Database error', 'details': str(exc)}), 500
+
+    entry_data = {
+        'id': entry.id,
+        'title': entry.title,
+        'content': entry.content,
+        'tags': entry.tags,
+        'created_at': entry.created_at.isoformat() if entry.created_at else None,
+        'updated_at': entry.updated_at.isoformat() if entry.updated_at else None,
+    }
+
+    return jsonify(entry_data), 200
+
+@bp.route('/api/v1/snippets/<int:id>', methods=['GET'])
+def get_snippet(id):
+    """Retrieve an snippet by ID.
+    Returns the entry (JSON) with status 200 on success, or JSON error with appropriate status code.
+    """
+    try:
+        snippet = Snippet.query.get(id)
+        if not snippet:
+            return jsonify({'error': 'snippet not found'}), 404
+    except Exception as exc:
+        return jsonify({'error': 'Database error', 'details': str(exc)}), 500
+
+    snippet_data = {
+        'id': snippet.id,
+        'title': snippet.title,
+        'snippet': snippet.code,
+        'tags': snippet.tags,
+        'language': snippet.language,
+        'created_at': snippet.created_at.isoformat() if snippet.created_at else None,
+        'updated_at': snippet.updated_at.isoformat() if snippet.updated_at else None,
+    }
+
+    return jsonify(snippet_data), 200
+
+@bp.route('/api/v1/snippets/<int:id>', methods=['DELETE'])
+def delete_snippet(id):
+    """Delete a snippet by ID.
+    Returns status 204 on success, or JSON error with appropriate status code.
+    """
+    try:
+        snippet = Snippet.query.get(id)
+        if not snippet:
+            return jsonify({'error': 'Snippet not found'}), 404
+
+        db.session.delete(snippet)
+        db.session.commit()
+    except Exception as exc:
+        db.session.rollback()
+        return jsonify({'error': 'Database error', 'details': str(exc)}), 500
+
+    return jsonify({'Success': f'Deleted Snippet -- {id}'}), 200
+
+@bp.route('/api/v1/entries/<int:id>', methods=['DELETE'])
+def delete_entries(id):
+    """Delete a entries by ID.
+    Returns status 204 on success, or JSON error with appropriate status code.
+    """
+    try:
+        entry = Entry.query.get(id)
+        if not entry:
+            return jsonify({'error': 'Entry not found'}), 404
+
+        db.session.delete(entry)
+        db.session.commit()
+    except Exception as exc:
+        db.session.rollback()
+        return jsonify({'error': 'Database error', 'details': str(exc)}), 500
+
+    return jsonify({'Success': f'Deleted Entry -- {id}'}), 200
