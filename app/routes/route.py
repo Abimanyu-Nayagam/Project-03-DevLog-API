@@ -5,7 +5,7 @@ bp = Blueprint('routes', __name__)
 
 # Insertion 
 
-@bp.route('/snippets', methods=['POST'])
+@bp.route('api/v1/snippets', methods=['POST'])
 def create_code():
     """Insert a new Code.
 
@@ -52,7 +52,7 @@ def create_code():
     }), 201
 
 
-@bp.route('/entries', methods=['POST'])
+@bp.route('api/v1/entries', methods=['POST'])
 def create_entry():
     """Insert a new Entry.
 
@@ -98,7 +98,7 @@ def create_entry():
     }), 201
 
 # Display
-@bp.route('/entries', methods=['GET'])
+@bp.route('api/v1/entries', methods=['GET'])
 def get_entries():
     """Retrieve all entries.
 
@@ -123,7 +123,7 @@ def get_entries():
 
     return jsonify(entries_list), 200
 
-@bp.route('/snippets', methods=['GET'])
+@bp.route('api/v1/snippets', methods=['GET'])
 def get_snippets():
     """Retrieve all snippets.
 
