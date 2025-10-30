@@ -1,9 +1,8 @@
-import os
+from io import BytesIO
 import json
-from flask import Blueprint, request, jsonify, send_file
-from flask_pydantic import validate
 from app.models.db_models import Entry, Snippet, db
 from app.models.models import ExportEntryRequest, ExportSnippetRequest
+from flask import Blueprint, request, jsonify, send_file
 
 e_bp = Blueprint('export_route', __name__)
 
@@ -26,14 +25,22 @@ def export_entry_md(entry_id):
     if not entry:
         return jsonify({'error': 'Entry not found'}), 404
 
-    with open(f"Entry {id}.md", 'w') as f:
-        heading = f"# {entry.title}"
-        
-        f.write(heading)
-        f.write("\n")
-        f.write(entry.content)
+    md_buffer = BytesIO()
+
+    heading = f"# {entry.title}"
+
+    content = f"{heading}\n{entry.content}"
+
+    md_buffer.write(content.encode('utf-8'))
+
+    md_buffer.seek(0)
     
-    return send_file(f"Entry {id}.md", as_attachment=True), 200
+    return send_file(
+        md_buffer,
+        as_attachment=True,
+        download_name=f"Entry {id}.md",
+        mimetype="text/markdown"
+        ), 200
 
 @e_bp.route('/export-snippet-md/v1/<int:snippet_id>',methods=['GET'])
 def export_snippet_md(snippet_id):
@@ -54,16 +61,22 @@ def export_snippet_md(snippet_id):
     if not snippet:
         return jsonify({'error': 'Entry not found'}), 404
 
-    with open(f"Snippet {id}.md", 'w') as f:
-        heading = f"# {snippet.title}"
-        
-        f.write(heading)
-        f.write("\n")
-        f.write(f"```{snippet.language.lower()}")
-        f.write("\n")
-        f.write(snippet.code)
+    md_buffer = BytesIO()
 
-    return send_file(f"Snippet {id}.md", as_attachment=True), 200
+    heading = f"# {snippet.title}"
+
+    content = f"{heading}\n\n```{snippet.language.lower()}\n{snippet.code}"
+
+    md_buffer.write(content.encode('utf-8'))
+
+    md_buffer.seek(0)
+    
+    return send_file(
+        md_buffer,
+        as_attachment=True,
+        download_name=f"Snippet {id}.md",
+        mimetype="text/markdown"
+        ), 200
 
 @e_bp.route('/export-snippet-json/v1/<int:entry_id>',methods=['GET'])
 def export_snippet_json(entry_id):
@@ -91,10 +104,18 @@ def export_snippet_json(entry_id):
          "tags": f"{snippet.tags}"
     }
 
-    with open(f"Snippet {id}.json", 'w') as f:
-        json.dump(response, f, indent=4, ensure_ascii=False)
+    md_buffer = BytesIO()
 
-    return send_file(f"Snippet {id}.json", as_attachment=True), 200
+    md_buffer.write(json.dumps(response).encode('utf-8'))
+
+    md_buffer.seek(0)
+    
+    return send_file(
+        md_buffer,
+        as_attachment=True,
+        download_name=f"Snippet {id}.json",
+        mimetype="application/json"
+        ), 200
 
 @e_bp.route('/export-entry-json/v1/<int:entry_id>',methods=['GET'])
 def export_entry_json(entry_id):
@@ -121,7 +142,15 @@ def export_entry_json(entry_id):
          "tags": f"{entry.tags}"
     }
 
-    with open(f"Entry {id}.json", 'w') as f:
-        json.dump(response, f, indent=4, ensure_ascii=False)
+    md_buffer = BytesIO()
 
-    return send_file(f"Entry {id}.json", as_attachment=True), 200
+    md_buffer.write(json.dumps(response).encode('utf-8'))
+
+    md_buffer.seek(0)
+    
+    return send_file(
+        md_buffer,
+        as_attachment=True,
+        download_name=f"Entry {id}.json",
+        mimetype="application/json"
+        ), 200
