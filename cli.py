@@ -326,16 +326,54 @@ def filter_snippets_by_lang(language):
     except requests.exceptions.RequestException as e:
         console.print(f"Failed to retrieve snippets: {e}")
 
-def download_snippet():
-    pass
+def download_snippet_md():
+    snippet_id = int(input("Enter id of the snippet to download: "))
+    url = f"http://127.0.0.1:5000/export-snippet-md/v1/{snippet_id}"
+    try:
+        res = requests.get(url, stream=True)
+        text = res.text.encode('utf-8')
+        with open(f"Snippet_{snippet_id}.md", "wb") as f:
+            f.write(text)
+    except requests.exceptions.RequestException as e:
+        console.print(f"Failed to download snippet: {e}")
 
-def download_entry():
-    pass
+def download_snippet_json():
+    snippet_id = int(input("Enter id of the snippet to download: "))
+    url = f"http://127.0.0.1:5000/export-snippet-json/v1/{snippet_id}"
+    try:
+        res = requests.get(url, stream=True)
+        text = res.text.encode('utf-8')
+        with open(f"Snippet_{snippet_id}.json", "wb") as f:
+            f.write(text)
+    except requests.exceptions.RequestException as e:
+        console.print(f"Failed to download snippet: {e}")
+
+def download_entry_md():
+    entry_id = int(input("Enter id of the snippet to download: "))
+    url = f"http://127.0.0.1:5000/export-entry-md/v1/{entry_id}"
+    try:
+        res = requests.get(url, stream=True)
+        text = res.text.encode('utf-8')
+        with open(f"Entry_{entry_id}.md", "wb") as f:
+            f.write(text)
+    except requests.exceptions.RequestException as e:
+        console.print(f"Failed to download snippet: {e}")
+
+def download_entry_json():
+    entry_id = int(input("Enter id of the snippet to download: "))
+    url = f"http://127.0.0.1:5000/export-entry-json/v1/{entry_id}"
+    try:
+        res = requests.get(url, stream=True)
+        text = res.text.encode('utf-8')
+        with open(f"Entry_{entry_id}.json", "wb") as f:
+            f.write(text)
+    except requests.exceptions.RequestException as e:
+        console.print(f"Failed to download snippet: {e}")
 
 def update_snippet(snippet_id):
     pass
 
-def update_entry(entry_id):
+def update_entry():
     pass
 
 def main():
@@ -363,8 +401,10 @@ def main():
     parser_del_entry = subparsers.add_parser('delete-entry', help='Delete an entry')
     parser_del_entry.add_argument('id', type=int, help='Entry ID')
     subparsers.add_parser('download-entry', help='Download all entries')
-    subparsers.add_parser('download-snippet', help='Download all snippets')
-
+    subparsers.add_parser('download-snippet-md', help='Download snippet by id')
+    subparsers.add_parser('download-entry-md', help='Download snippet by id')
+    subparsers.add_parser('download-snippet-json', help='Download snippet by id')
+    subparsers.add_parser('download-entry-json', help='Download snippet by id')
 
     args = parser.parse_args()
 
@@ -379,8 +419,10 @@ def main():
         case 'update-entry': update_entry(args.id)
         case 'delete-snippet': delete_snippet(args.id)
         case 'delete-entry': delete_entry(args.id)
-        case 'download-snippet': download_snippet()
-        case 'download-entry': download_entry()
+        case 'download-snippet-md': download_snippet_md()
+        case 'download-snippet-json': download_snippet_json()
+        case 'download-entry-md': download_entry_md()
+        case 'download-entry-json': download_entry_json()
         case _: parser.print_help()
 
 
