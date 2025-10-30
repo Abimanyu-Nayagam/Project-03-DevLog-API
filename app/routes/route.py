@@ -232,3 +232,128 @@ def delete_entries(id):
         return jsonify({'error': 'Database error', 'details': str(exc)}), 500
 
     return jsonify({'Success': f'Deleted Entry -- {id}'}), 200
+
+@bp.route('/api/v1/snippets/filter/tag/<string:tag>', methods=['GET'])
+def filter_snippet_by_tag(tag):
+    """Retrieve an snippet by tags.
+    Returns the snippet (JSON) with status 200 on success, or JSON error with appropriate status code.
+    """
+    try:
+        snippets = Snippet.query.filter(Snippet.tags.contains(tag)).all()
+        if not snippets:
+            return jsonify({'error': 'No snippets found'}), 404
+    except Exception as exc:
+        return jsonify({'error': 'Database error', 'details': str(exc)}), 500
+
+    snippets_data = []
+    for snippet in snippets:
+        snippets_data.append({
+        'id': snippet.id,
+        'title': snippet.title,
+        'snippet': snippet.code,
+        'tags': snippet.tags,
+        'created_at': snippet.created_at.isoformat() if snippet.created_at else None,
+        'updated_at': snippet.updated_at.isoformat() if snippet.updated_at else None,
+    })
+    
+    return jsonify(snippets_data), 200
+
+@bp.route('/api/v1/snippets/filter/language/<string:lang>', methods=['GET'])
+def filter_snippet_by_lang(lang):
+    """Retrieve an snippet by language.
+    Returns the snippet (JSON) with status 200 on success, or JSON error with appropriate status code.
+    """
+    try:
+        snippets = Snippet.query.filter(Snippet.language.contains(lang)).all()
+        if not snippets:
+            return jsonify({'error': 'No snippets found'}), 404
+    except Exception as exc:
+        return jsonify({'error': 'Database error', 'details': str(exc)}), 500
+
+    snippets_data = []
+    for snippet in snippets:
+        snippets_data.append({
+        'id': snippet.id,
+        'title': snippet.title,
+        'snippet': snippet.code,
+        'tags': snippet.tags,
+        'created_at': snippet.created_at.isoformat() if snippet.created_at else None,
+        'updated_at': snippet.updated_at.isoformat() if snippet.updated_at else None,
+    })
+    
+    return jsonify(snippets_data), 200
+
+@bp.route('/api/v1/entries/filter/tags/<string:tag>', methods=['GET'])
+def filter_entry_by_tag(tag):
+    """Retrieve an entry by tags.
+    Returns the entry (JSON) with status 200 on success, or JSON error with appropriate status code.
+    """
+    try:
+        entries = Entry.query.filter(Entry.tags.contains(tag)).all()
+        if not entries:
+            return jsonify({'error': 'No entries found'}), 404
+    except Exception as exc:
+        return jsonify({'error': 'Database error', 'details': str(exc)}), 500
+
+    entry_data = []
+    for entry in entries:
+        entry_data.append({
+            'id': entry.id,
+        'title': entry.title,
+        'content': entry.content,
+        'tags': entry.tags,
+        'created_at': entry.created_at.isoformat() if entry.created_at else None,
+        'updated_at': entry.updated_at.isoformat() if entry.updated_at else None,
+    })
+
+    return jsonify(entry_data), 200
+
+@bp.route('/api/v1/entries/filter/title/<string:title>', methods=['GET'])
+def filter_entry_by_title(title):
+    """Retrieve an entry by title.
+    Returns the entry (JSON) with status 200 on success, or JSON error with appropriate status code.
+    """
+    try:
+        entries = Entry.query.filter(Entry.title.contains(title)).all()
+        if not entries:
+            return jsonify({'error': 'No entries found'}), 404
+    except Exception as exc:
+        return jsonify({'error': 'Database error', 'details': str(exc)}), 500
+
+    entry_data = []
+    for entry in entries:
+        entry_data.append({
+            'id': entry.id,
+        'title': entry.title,
+        'content': entry.content,
+        'tags': entry.tags,
+        'created_at': entry.created_at.isoformat() if entry.created_at else None,
+        'updated_at': entry.updated_at.isoformat() if entry.updated_at else None,
+    })
+
+    return jsonify(entry_data), 200
+
+@bp.route('/api/v1/entries/filter/title/<string:title>', methods=['GET'])
+def filter_snippet_by_title(title):
+    """Retrieve a snippet by title.
+    Returns the snippet (JSON) with status 200 on success, or JSON error with appropriate status code.
+    """
+    try:
+        snippets = Snippet.query.filter(Snippet.title.contains(title)).all()
+        if not snippets:
+            return jsonify({'error': 'No snippets found'}), 404
+    except Exception as exc:
+        return jsonify({'error': 'Database error', 'details': str(exc)}), 500
+
+    snippet_data = []
+    for snippet in snippets:
+        snippet_data.append({
+            'id': snippet.id,
+            'title': snippet.title,
+            'content': snippet.content,
+            'tags': snippet.tags,
+        'created_at': snippet.created_at.isoformat() if snippet.created_at else None,
+        'updated_at': snippet.updated_at.isoformat() if snippet.updated_at else None,
+    })
+
+    return jsonify(snippet_data), 200
