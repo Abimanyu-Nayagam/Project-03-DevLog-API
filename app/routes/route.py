@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify
 from app.models.db_models import Entry, Snippet, db
+from app.models.models import CreateEntryRequest, CreateSnippetRequest, UpdateEntryRequest, UpdateSnippetRequest
 from sqlalchemy import or_
 
 bp = Blueprint('routes', __name__)
@@ -19,6 +20,11 @@ def create_code():
     appropriate status code."""
 
     data = request.get_json() 
+
+    try:
+        create_snippet = CreateSnippetRequest(**data)
+    except Exception as e:
+        return jsonify({'error': 'Invalid request', 'details': str(e)}), 400
 
     if not data:
         return jsonify({'error': 'Request must be JSON'}), 400   # validare request is of json type
@@ -70,6 +76,11 @@ def create_entry():
 
     if not data:
         return jsonify({'error': 'Request must be JSON'}), 400   # validare request is of json type
+
+    try:
+        create_entry = CreateEntryRequest(**data)
+    except Exception as e:
+        return jsonify({'error': 'Invalid request', 'details': str(e)}), 400
 
     title = data.get('title')   #Get each key
     content = data.get('content')
@@ -156,6 +167,8 @@ def get_entry(id):
     """Retrieve an entry by ID.
     Returns the entry (JSON) with status 200 on success, or JSON error with appropriate status code.
     """
+    if type(id) is not int:
+        return jsonify({'error': 'ID must be an integer'}), 400
     try:
         entry = Entry.query.get(id)
         if not entry:
@@ -179,6 +192,8 @@ def get_snippet(id):
     """Retrieve an snippet by ID.
     Returns the entry (JSON) with status 200 on success, or JSON error with appropriate status code.
     """
+    if type(id) is not int:
+        return jsonify({'error': 'ID must be an integer'}), 400
     try:
         snippet = Snippet.query.get(id)
         if not snippet:
@@ -203,6 +218,10 @@ def delete_snippet(id):
     """Delete a snippet by ID.
     Returns status 204 on success, or JSON error with appropriate status code.
     """
+
+    if type(id) is not int:
+        return jsonify({'error': 'ID must be an integer'}), 400
+    
     try:
         snippet = Snippet.query.get(id)
         if not snippet:
@@ -221,6 +240,10 @@ def delete_entries(id):
     """Delete a entries by ID.
     Returns status 204 on success, or JSON error with appropriate status code.
     """
+
+    if type(id) is not int:
+        return jsonify({'error': 'ID must be an integer'}), 400
+
     try:
         entry = Entry.query.get(id)
         if not entry:
@@ -235,14 +258,21 @@ def delete_entries(id):
     return jsonify({'Success': f'Deleted Entry -- {id}'}), 200
 
 #update exisitng entry
-@bp.route('/api/v1/entries/<int:id>', methods=['PATCH'])
-def update_entry(id):
+@bp.route('/api/v1/entries', methods=['PATCH'])
+def update_entry():
     """Update an existing entry by ID."""
     data = request.get_json()
+
+    # Validate request body using Pydantic model
+    try:
+        update_entry = UpdateEntryRequest(**data)
+    except Exception as e:
+        return jsonify({'error': 'Invalid request', 'details': str(e)}), 400
+
     if not data:
         return jsonify({'error': 'Request must be JSON'}), 400
 
-    entry = Entry.query.get(id)
+    entry = Entry.query.get(data['id'])
     if not entry:
         return jsonify({'error': 'Entry not found'}), 404
 
@@ -266,14 +296,21 @@ def update_entry(id):
         return jsonify({'error': 'Database error', 'details': str(exc)}), 500
 
 
-@bp.route('/api/v1/snippets/<int:id>', methods=['PATCH'])
-def update_snippet(id):
+@bp.route('/api/v1/snippets', methods=['PATCH'])
+def update_snippet():
     """Update an existing snippet by ID."""
     data = request.get_json()
+
+    # Validate request body using Pydantic model
+    try:
+        update_snippet = UpdateSnippetRequest(**data)
+    except Exception as e:
+        return jsonify({'error': 'Invalid request', 'details': str(e)}), 400
+    
     if not data:
         return jsonify({'error': 'Request must be JSON'}), 400
 
-    snippet = Snippet.query.get(id)
+    snippet = Snippet.query.get(data['id'])
     if not snippet:
         return jsonify({'error': 'Snippet not found'}), 404
 
