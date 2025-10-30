@@ -19,6 +19,10 @@ CREATE TABLE entries (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
+-- Create indexes for entries table 
+CREATE INDEX idx_entries_title ON entries(title);
+CREATE INDEX idx_entries_tags ON entries(tags);
+
 -- Create snippets table (code snippets)
 CREATE TABLE snippets (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -29,6 +33,11 @@ CREATE TABLE snippets (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
+
+-- Create indexes for snippets table
+CREATE INDEX idx_snippets_title ON snippets(title);
+CREATE INDEX idx_snippets_language ON snippets(language);
+CREATE INDEX idx_snippets_tags ON snippets(tags);
 
 INSERT INTO entries (title, content, tags) VALUES
 ('Getting Started with Flask', 
