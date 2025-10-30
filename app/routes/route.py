@@ -13,6 +13,7 @@ def create_code():
     Expects JSON body with:
       - language (str, required)
       - snippet (str, required)
+      - tags (str, optional)
 
     Returns created code (JSON) with status 201 on success, or JSON error with
     appropriate status code."""
@@ -23,7 +24,7 @@ def create_code():
         return jsonify({'error': 'Request must be JSON'}), 400   # validare request is of json type
     
     title = data.get('title')   #Get each key
-    snippets = data.get('snippets')
+    snippets = data.get('snippet')
     tags = data.get('tags')
     language = data.get('language')
 
@@ -45,7 +46,7 @@ def create_code():
     return jsonify({
         'id': code_entry.id,
         'title': code_entry.title,
-        'snippets': code_entry.code,
+        'snippet': code_entry.code,
         'language': code_entry.language,
         'tags': code_entry.tags,
         'created_at': code_entry.created_at.isoformat() if code_entry.created_at else None,
@@ -181,7 +182,7 @@ def get_snippet(id):
     try:
         snippet = Snippet.query.get(id)
         if not snippet:
-            return jsonify({'error': 'snippet not found'}), 404
+            return jsonify({'error': 'Snippet not found'}), 404
     except Exception as exc:
         return jsonify({'error': 'Database error', 'details': str(exc)}), 500
 
