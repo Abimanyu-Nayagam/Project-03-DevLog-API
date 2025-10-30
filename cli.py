@@ -212,6 +212,120 @@ def delete_entry(entry_id):
     except requests.exceptions.RequestException as e:
         print(f"Failed to delete entry: {e}")
 
+def filter_snippets_by_tag(tag):
+    url = f"http://127.0.0.1:5000/api/v1/snippets/filter/tag/{tag}"
+    try:
+        res = requests.get(url)
+        snippets = res.json()
+
+        for snippet in snippets:
+            snippets_info = {
+                "title": snippet.get("title"),
+                "language": snippet.get("language"),
+                "tags": snippet.get("tags"),
+            }
+            print(snippets_info)
+            console.print("-" * 100)
+            console.print(
+                Markdown(snippet.get("content", ""))
+            )
+            console.print("-" * 100)
+            console.print("-" * 100)
+
+    except requests.exceptions.RequestException as e:
+        console.print(f"Failed to retrieve snippets: {e}")
+
+
+def filter_entries_by_tag(tag):
+    url = f"http://127.0.0.1:5000/api/v1/entries/filter/tag/{tag}"
+    try:
+        res = requests.get(url)
+        entries = res.json()
+
+        for entry in entries:
+            entry_info = {
+                "title": entry.get("title"),
+                "tags": entry.get("tags"),
+            }
+            print(entry_info)
+            console.print("-" * 100)
+            console.print(
+                Markdown(entry.get("content", ""))
+            )
+            console.print("-" * 100)
+            console.print("-" * 100)
+
+    except requests.exceptions.RequestException as e:
+        console.print(f"Failed to retrieve snippets: {e}")
+
+def filter_entries_by_title(title):
+    url = f"http://127.0.0.1:5000/api/v1/entries/filter/title/{title}"
+    try:
+        res = requests.get(url)
+        entries = res.json()
+
+        for entry in entries:
+            entry_info = {
+                "title": entry.get("title"),
+                "tags": entry.get("tags"),
+            }
+            print(entry_info)
+            console.print("-" * 100)
+            console.print(
+                Markdown(entry.get("content", ""))
+            )
+            console.print("-" * 100)
+            console.print("-" * 100)
+
+    except requests.exceptions.RequestException as e:
+        console.print(f"Failed to retrieve snippets: {e}")
+
+def filter_snippets_by_title(title):
+    url = f"http://127.0.0.1:5000/api/v1/snippets/filter/title/{title}"
+    try:
+        res = requests.get(url)
+        snippets = res.json()
+
+        for snippet in snippets:
+            snippets_info = {
+                "title": snippet.get("title"),
+                "language": snippet.get("language"),
+                "tags": snippet.get("tags"),
+            }
+            print(snippets_info)
+            console.print("-" * 100)
+            console.print(
+                Markdown(snippet.get("content", ""))
+            )
+            console.print("-" * 100)
+            console.print("-" * 100)
+
+    except requests.exceptions.RequestException as e:
+        console.print(f"Failed to retrieve snippets: {e}")
+
+def filter_snippets_by_lang(language):
+    url = f"http://127.0.0.1:5000/api/v1/snippets/filter/language/{language}"
+    try:
+        res = requests.get(url)
+        snippets = res.json()
+
+        for snippet in snippets:
+            snippets_info = {
+                "title": snippet.get("title"),
+                "language": snippet.get("language"),
+                "tags": snippet.get("tags"),
+            }
+            print(snippets_info)
+            console.print("-" * 100)
+            console.print(
+                Markdown(snippet.get("content", ""))
+            )
+            console.print("-" * 100)
+            console.print("-" * 100)
+
+    except requests.exceptions.RequestException as e:
+        console.print(f"Failed to retrieve snippets: {e}")
+
 def download_snippet():
     pass
 
