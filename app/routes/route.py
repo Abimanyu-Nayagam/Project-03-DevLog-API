@@ -283,7 +283,7 @@ def filter_snippet_by_lang(lang):
     
     return jsonify(snippets_data), 200
 
-@bp.route('/api/v1/entries/filter/tags/<string:tag>', methods=['GET'])
+@bp.route('/api/v1/entries/filter/tag/<string:tag>', methods=['GET'])
 def filter_entry_by_tag(tag):
     """Retrieve an entry by tags.
     Returns the entry (JSON) with status 200 on success, or JSON error with appropriate status code.
