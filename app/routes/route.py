@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify
 from app.models.db_models import Entry, Snippet, db
+from sqlalchemy import or_
 
 bp = Blueprint('routes', __name__)
 
@@ -294,4 +295,67 @@ def update_snippet(id):
     except Exception as exc:
         db.session.rollback()
         return jsonify({'error': 'Database error', 'details': str(exc)}), 500
+    
 
+
+# search entries 
+@bp.route('/api/v1/entries/search', methods=['GET'])
+def search_entries():
+    """Search entries by title, content, or tags."""
+    query = request.args.get('q')
+    if not query:
+        return jsonify({'error': 'Search query (q) is required'}), 400
+
+    try:
+        results = Entry.query.filter(
+            or_(
+                Entry.title.ilike(f'%{query}%'),
+                Entry.content.ilike(f'%{query}%'),
+                Entry.tags.ilike(f'%{query}%')
+            )
+        ).all()
+    except Exception as exc:
+        return jsonify({'error': 'Database error', 'details': str(exc)}), 500
+
+    entries_list = [{
+        'id': e.id,
+        'title': e.title,
+        'content': e.content,
+        'tags': e.tags,
+        'created_at': e.created_at.isoformat() if e.created_at else None,
+        'updated_at': e.updated_at.isoformat() if e.updated_at else None,
+    } for e in results]
+
+    return jsonify(entries_list), 200
+
+
+@bp.route('/api/v1/snippets/search', methods=['GET'])
+def search_snippets():
+    """Search snippets by title, code, tags, or language."""
+    query = request.args.get('q')
+    if not query:
+        return jsonify({'error': 'Search query (q) is required'}), 400
+
+    try:
+        results = Snippet.query.filter(
+            or_(
+                Snippet.title.ilike(f'%{query}%'),
+                Snippet.code.ilike(f'%{query}%'),
+                Snippet.tags.ilike(f'%{query}%'),
+                Snippet.language.ilike(f'%{query}%')
+            )
+        ).all()
+    except Exception as exc:
+        return jsonify({'error': 'Database error', 'details': str(exc)}), 500
+
+    snippets_list = [{
+        'id': s.id,
+        'title': s.title,
+        'snippet': s.code,
+        'language': s.language,
+        'tags': s.tags,
+        'created_at': s.created_at.isoformat() if s.created_at else None,
+        'updated_at': s.updated_at.isoformat() if s.updated_at else None,
+    } for s in results]
+
+    return jsonify(snippets_list), 200
