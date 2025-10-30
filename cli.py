@@ -87,7 +87,7 @@ def create_entry():
 
 def show_snippets():
 
-    """Retrieve all snippets."""
+    """Retrieve all snippets"""
 
     url = "http://localhost:5000/api/v1/snippets"
     try:
@@ -114,7 +114,7 @@ def show_snippets():
 
 def show_entries():
 
-    """Retrieve all entries."""
+    """Retrieve all entries"""
 
     url = "http://localhost:5000/api/v1/entries"
     try:
@@ -140,7 +140,7 @@ def show_entries():
 
 def show_snippet(snippet_id):
 
-    """Retrieve single snippet by id."""
+    """Retrieve single snippet by id"""
 
     url = f"http://localhost:5000/api/v1/snippets/{snippet_id}"
     try:
@@ -164,7 +164,7 @@ def show_snippet(snippet_id):
 
 def show_entry(entry_id):
 
-    """Retrieve single entry by id."""
+    """Retrieve single entry by Id"""
 
     url = f"http://localhost:5000/api/v1/entries/{entry_id}"
     try:
