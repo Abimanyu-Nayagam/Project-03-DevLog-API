@@ -124,7 +124,6 @@ def show_entries():
         for entry in entires:
             entry_info = {
                 "title": entry.get("title"),
-                "language": entry.get("language"),
                 "tags": entry.get("tags"),
             }
             print(entry_info)
@@ -177,11 +176,10 @@ def show_entry(entry_id):
         
         print({
             "title": entry.get("title"),
-            "language": entry.get("language"),
             "tags": entry.get("tags"),})
         console.print("-" * 100)
         console.print(
-            Syntax(entry.get("content", ""), entry.get("language", "text"), line_numbers=True)
+            Markdown(entry.get("content", ""))
         )
     except requests.exceptions.RequestException as e:
         console.print(f"Failed to retrieve entry: {e}")
@@ -227,7 +225,7 @@ def filter_snippets_by_tag(tag):
             print(snippets_info)
             console.print("-" * 100)
             console.print(
-                Markdown(snippet.get("content", ""))
+                Syntax(snippet.get("snippet", ""), snippet.get("language", "text"), line_numbers=True)
             )
             console.print("-" * 100)
             console.print("-" * 100)
@@ -295,7 +293,7 @@ def filter_snippets_by_title(title):
             print(snippets_info)
             console.print("-" * 100)
             console.print(
-                Markdown(snippet.get("content", ""))
+                Syntax(snippet.get("snippet", ""), snippet.get("language", "text"), line_numbers=True)
             )
             console.print("-" * 100)
             console.print("-" * 100)
@@ -318,7 +316,7 @@ def filter_snippets_by_lang(language):
             print(snippets_info)
             console.print("-" * 100)
             console.print(
-                Markdown(snippet.get("content", ""))
+                Syntax(snippet.get("snippet", ""), snippet.get("language", "text"), line_numbers=True)
             )
             console.print("-" * 100)
             console.print("-" * 100)
@@ -373,7 +371,7 @@ def download_entry_json():
 def update_snippet(snippet_id):
     pass
 
-def update_entry():
+def update_entry(entry_id):
     pass
 
 def main():
