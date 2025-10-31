@@ -20,7 +20,7 @@ def create_snippet():
     title = input("Enter snippet title: ")
     
     # Multi-line code input
-    print("Enter snippet code (press Ctrl+Z on Windows when done)")
+    print("Enter snippet code (press Ctrl+Z and enter when done)")
     code_lines = []
     try:
         while True:
@@ -60,7 +60,7 @@ def create_entry():
     title = input("Enter entry title: ")
     
     # Multi-line content input
-    print("Enter entry content (press Ctrl+Z on Windows when done): ")
+    print("Enter entry content (press Ctrl+Z and enter when done): ")
     content_lines = []
     try:
         while True:
