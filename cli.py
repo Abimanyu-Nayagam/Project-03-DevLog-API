@@ -371,10 +371,85 @@ def download_entry_json():
         console.print(f"Failed to download snippet: {e}")
 
 def update_snippet(snippet_id):
-    pass
+    fetch_url = f"http://127.0.0.1:5000/api/v1/snippets/{snippet_id}"
+    try:
+        res = requests.get(fetch_url)
+        snippet = res.json()
+        print(f"Current Snippet Data for id {snippet_id}:")
+        print(snippet)
 
-def update_entry():
-    pass
+        if snippet.get('error'):
+            print({'error': 'snippet not found'})
+            return
+    except requests.exceptions.RequestException as e:
+        console.print(f"Failed to retrieve snippet: {e}")
+        return
+    
+    update_url=f"http://127.0.0.1:5000/api/v1/snippets"
+    # Title, code, tags, language
+    print("Add information for any field you wish to update, else leave it blank.")
+    title = input("Title: ")
+    tags = input("Tags (comma-separated): ")
+    language = input("Language: ")
+    code = input("Code: ")
+    
+    update = {}
+    update['id'] = snippet_id
+    
+    if title:
+        update['title'] = title
+    if code:
+        update['snippet'] = code
+    if tags:
+        update['tags'] = tags
+    if language:
+        update['language'] = language
+    
+    try:
+        res = requests.patch(update_url, json=update)
+        result = res.json()
+        print(result)
+    except requests.exceptions.RequestException as e:
+        print(f"Failed to update snippet: {e}")
+
+def update_entry(entry_id):
+    fetch_url = f"http://127.0.0.1:5000/api/v1/entries/{entry_id}"
+    try:
+        res = requests.get(fetch_url)
+        entry = res.json()
+        print(f"Current Snippet Data for id {entry_id}:")
+        print(entry)
+
+        if entry.get('error'):
+            print({'error': 'entry not found'})
+            return
+    except requests.exceptions.RequestException as e:
+        console.print(f"Failed to retrieve entry: {e}")
+        return
+    
+    update_url=f"http://127.0.0.1:5000/api/v1/entries"
+    # Title, code, tags, language
+    print("Add information for any field you wish to update, else leave it blank.")
+    title = input("Title: ")
+    tags = input("Tags (comma-separated): ")
+    content = input("content: ")
+    
+    update = {}
+    update['id'] = entry_id
+    
+    if title:
+        update['title'] = title
+    if content:
+        update['content'] = content
+    if tags:
+        update['tags'] = tags
+    
+    try:
+        res = requests.patch(update_url, json=update)
+        result = res.json()
+        print(result)
+    except requests.exceptions.RequestException as e:
+        print(f"Failed to update entry: {e}")
 
 def main():
     parser = argparse.ArgumentParser(
