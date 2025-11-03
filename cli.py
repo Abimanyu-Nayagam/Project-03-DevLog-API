@@ -347,7 +347,7 @@ def download_snippet_json():
         console.print(f"Failed to download snippet: {e}")
 
 def download_entry_md():
-    entry_id = int(input("Enter id of the snippet to download: "))
+    entry_id = int(input("Enter id of the entry to download: "))
     url = f"http://127.0.0.1:5000/export-entry-md/v1/{entry_id}"
     try:
         res = requests.get(url, stream=True)
@@ -358,7 +358,7 @@ def download_entry_md():
         console.print(f"Failed to download snippet: {e}")
 
 def download_entry_json():
-    entry_id = int(input("Enter id of the snippet to download: "))
+    entry_id = int(input("Enter id of the entry to download: "))
     url = f"http://127.0.0.1:5000/export-entry-json/v1/{entry_id}"
     try:
         res = requests.get(url, stream=True)
