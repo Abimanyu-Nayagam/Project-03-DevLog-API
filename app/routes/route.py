@@ -498,7 +498,7 @@ def filter_entry_by_title(title):
 
     return jsonify(entry_data), 200
 
-@bp.route('/api/v1/entries/filter/title/<string:title>', methods=['GET'])
+@bp.route('/api/v1/snippets/filter/title/<string:title>', methods=['GET'])
 def filter_snippet_by_title(title):
     """Retrieve a snippet by title.
     Returns the snippet (JSON) with status 200 on success, or JSON error with appropriate status code.
@@ -515,7 +515,7 @@ def filter_snippet_by_title(title):
         snippet_data.append({
             'id': snippet.id,
             'title': snippet.title,
-            'content': snippet.content,
+            'code': snippet.code,
             'tags': snippet.tags,
         'created_at': snippet.created_at.isoformat() if snippet.created_at else None,
         'updated_at': snippet.updated_at.isoformat() if snippet.updated_at else None,

@@ -309,7 +309,7 @@ def filter_snippets_by_title(title):
             print(snippets_info)
             console.print("-" * 100)
             console.print(
-                Syntax(snippet.get("snippet", ""), snippet.get("language", "text"), line_numbers=True)
+                Syntax(snippet.get("code", ""), snippet.get("language", "text"), line_numbers=True)
             )
             console.print("-" * 100)
             console.print("-" * 100)
@@ -469,6 +469,49 @@ def update_entry(entry_id):
     except requests.exceptions.RequestException as e:
         print(f"Failed to update entry: {e}")
 
+# Function to call the search route for snippets
+def search_snippets(query):
+    url = f"http://localhost:5000/api/v1/snippets/search?q={query}"
+    try:
+        res = requests.get(url)
+        snippets = res.json()
+        for snip in snippets:
+            code_info = {
+                "title": snip.get("title"),
+                "language": snip.get("language"),
+                "tags": snip.get("tags"),
+            }
+            print(code_info)
+            console.print("-" * 100)
+            console.print(
+                Syntax(snip.get("snippet", ""), snip.get("language", "text"), line_numbers=True)
+            )
+            console.print("-" * 100)
+            console.print("-" * 100)
+    except requests.exceptions.RequestException as e:
+        console.print(f"Failed to search snippets: {e}")
+
+# Function to call the search route for snippets
+def search_entries(query):
+    url = f"http://localhost:5000/api/v1/entries/search?q={query}"
+    try:
+        res = requests.get(url)
+        entries = res.json()
+        for entry in entries:
+            code_info = {
+                "title": entry.get("title"),
+                "tags": entry.get("tags"),
+            }
+            print(code_info)
+            console.print("-" * 100)
+            console.print(
+                Markdown(entry.get("content", ""))
+            )
+            console.print("-" * 100)
+            console.print("-" * 100)
+    except requests.exceptions.RequestException as e:
+        console.print(f"Failed to search snippets: {e}")
+
 def main():
     parser = argparse.ArgumentParser(
         description="DevLog CLI — manage snippets and entries"
@@ -508,6 +551,10 @@ def main():
     filter_snippet_by_title.add_argument('title', type=str, help='Title')
     filter_snippet_by_lang = subparsers.add_parser('filter-snippet-lang', help='Filter a snippet by lang')
     filter_snippet_by_lang.add_argument('lang', type=str, help='Language')
+    search_snippet = subparsers.add_parser('search-snippet', help='Search a snippet')
+    search_snippet.add_argument('query', type=str, help='query')
+    search_entry = subparsers.add_parser('search-entry', help='Search a entry')
+    search_entry.add_argument('query', type=str, help='query')
 
     args = parser.parse_args()
 
@@ -531,6 +578,8 @@ def main():
         case 'filter-snippet-title': filter_snippets_by_title(args.title),
         case 'filter-entry-title': filter_entries_by_title(args.title),
         case 'filter-snippet-lang': filter_snippets_by_lang(args.lang),
+        case 'search-snippet': search_snippets(args.query),
+        case 'search-entry': search_entries(args.query),
         case _: parser.print_help()
 
 
