@@ -216,6 +216,10 @@ def filter_snippets_by_tag(tag):
         res = requests.get(url)
         snippets = res.json()
 
+        if 'error' in snippets:
+            print({'error': 'no snippets found with the given tag'})
+            return
+
         for snippet in snippets:
             snippets_info = {
                 "title": snippet.get("title"),
@@ -240,6 +244,10 @@ def filter_entries_by_tag(tag):
         res = requests.get(url)
         entries = res.json()
 
+        if 'error' in entries:
+            print({'error': 'no snippets found with the given tag'})
+            return
+
         for entry in entries:
             entry_info = {
                 "title": entry.get("title"),
@@ -261,6 +269,10 @@ def filter_entries_by_title(title):
     try:
         res = requests.get(url)
         entries = res.json()
+
+        if 'error' in entries:
+            print({'error': 'no snippets found with the given title'})
+            return
 
         for entry in entries:
             entry_info = {
@@ -284,6 +296,10 @@ def filter_snippets_by_title(title):
         res = requests.get(url)
         snippets = res.json()
 
+        if 'error' in snippets:
+            print({'error': 'no snippets found with the given title'})
+            return
+
         for snippet in snippets:
             snippets_info = {
                 "title": snippet.get("title"),
@@ -306,6 +322,10 @@ def filter_snippets_by_lang(language):
     try:
         res = requests.get(url)
         snippets = res.json()
+
+        if 'error' in snippets:
+            print({'error': 'no snippets found with the given language'})
+            return
 
         for snippet in snippets:
             snippets_info = {
@@ -478,6 +498,16 @@ def main():
     subparsers.add_parser('download-entry-md', help='Download snippet by id')
     subparsers.add_parser('download-snippet-json', help='Download snippet by id')
     subparsers.add_parser('download-entry-json', help='Download snippet by id')
+    filter_entry_by_tag = subparsers.add_parser('filter-entry-tag', help='Filter an entry by tag')
+    filter_entry_by_tag.add_argument('tag', type=str, help='Tag')
+    filter_entry_by_title = subparsers.add_parser('filter-entry-title', help='Filter an entry by title')
+    filter_entry_by_title.add_argument('title', type=str, help='Title')
+    filter_snippet_by_tag = subparsers.add_parser('filter-snippet-tag', help='Filter a snippet by tag')
+    filter_snippet_by_tag.add_argument('tag', type=str, help='Tag')
+    filter_snippet_by_title = subparsers.add_parser('filter-snippet-title', help='Filter a snippet by title')
+    filter_snippet_by_title.add_argument('title', type=str, help='Title')
+    filter_snippet_by_lang = subparsers.add_parser('filter-snippet-lang', help='Filter a snippet by lang')
+    filter_snippet_by_lang.add_argument('lang', type=str, help='Language')
 
     args = parser.parse_args()
 
@@ -496,6 +526,11 @@ def main():
         case 'download-snippet-json': download_snippet_json()
         case 'download-entry-md': download_entry_md()
         case 'download-entry-json': download_entry_json()
+        case 'filter-snippet-tag': filter_snippets_by_tag(args.tag),
+        case 'filter-entry-tag': filter_entries_by_tag(args.tag),
+        case 'filter-snippet-title': filter_snippets_by_title(args.title),
+        case 'filter-entry-title': filter_entries_by_title(args.title),
+        case 'filter-snippet-lang': filter_snippets_by_lang(args.lang),
         case _: parser.print_help()
 
 
