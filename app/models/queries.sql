@@ -27,6 +27,7 @@ CREATE INDEX idx_entries_tags ON entries(tags);
 CREATE TABLE snippets (
     id INT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
+    description VARCHAR(255) NOT NULL,
     code TEXT NOT NULL,
     language VARCHAR(50) NOT NULL,
     tags VARCHAR(500),
@@ -60,7 +61,7 @@ INSERT INTO entries (title, content, tags) VALUES
 'Integrated Pydantic for request validation in our Flask API. Pydantic validates data types automatically and provides clear error messages.\n\n**Without Pydantic:**\n```python\nif not request.json.get("title"):\n    return {"error": "Title required"}, 400\n```\n\n**With Pydantic:**\n```python\nclass EntrySchema(BaseModel):\n    title: str\n    content: str\n    tags: Optional[str]\n```\n\n**Benefits:**\n- Automatic type checking\n- Clear error messages\n- Self-documenting code\n- Less boilerplate validation code\n\nPydantic catches errors before they reach the database, making the API more robust.',
 'pydantic,validation,python,api');
 
-INSERT INTO snippets (title, code, language, tags) VALUES
+INSERT INTO snippets (title, code, language, description, tags) VALUES
 ('Flask Basic Route',
 'from flask import Flask, jsonify
 
