@@ -14,6 +14,12 @@ class Entry(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
+    # Foreign key to User
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+
+    # Relationship
+    user = db.relationship("User", back_populates="entries")
+
     def __repr__(self):
         return f"<Entry {self.title}>"
 
@@ -29,7 +35,27 @@ class Snippet(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
+    # Foreign key to User
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+
+    # Relationship
+    user = db.relationship("User", back_populates="snippets")
+
     def __repr__(self):
         return f"<Snippet {self.title}>"
     
+class User(db.Model):
+    __tablename__ = "users"
 
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(255), unique=True, nullable=False, index=True)
+    username = db.Column(db.String(150), unique=True, nullable=False, index=True)
+    password_hashed = db.Column(db.String(255), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    # Relationships
+    snippets = db.relationship("Snippet", back_populates="user", cascade="all, delete-orphan")
+    entries = db.relationship("Entry", back_populates="user", cascade="all, delete-orphan")
+
+    def __repr__(self):
+        return f"<User {self.username}>"

@@ -33,3 +33,10 @@ class UpdateEntryRequest(BaseModel):
     title: str | None = None
     content: str | None = None
     tags: str | None = None
+
+class CreateUserRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    email: str
+    username: str
+    password: str

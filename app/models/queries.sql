@@ -35,6 +35,14 @@ CREATE TABLE snippets (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
+CREATE TABLE users
+(
+id int auto_increment primary key,
+username varchar(255) unique not null,
+email varchar(255) unique not null,
+password_hashed varchar(255) not null
+)
+
 -- Create indexes for snippets table
 CREATE INDEX idx_snippets_title ON snippets(title);
 CREATE INDEX idx_snippets_language ON snippets(language);
