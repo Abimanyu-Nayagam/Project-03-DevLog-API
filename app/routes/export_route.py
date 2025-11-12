@@ -2,17 +2,22 @@ from io import BytesIO
 import json
 from app.models.db_models import Entry, Snippet, db
 from flask import Blueprint, request, jsonify, send_file
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
 e_bp = Blueprint('export_route', __name__)
 
 @e_bp.route('/export-entry-md/v1/<int:entry_id>',methods=['GET'])
+@jwt_required()
 def export_entry_md(entry_id):
+
     '''
     Export the selected entry in the form of a Markdown (.md) file using the provided entry id
 
     Parameters:
         entry_id: id of the entry which needs to be exported
     '''
+    current_user_id = get_jwt_identity()
+
     if type(entry_id) != int:
         return jsonify({'error': 'Invalid id format. id must be an integer.'}), 400
     
@@ -44,6 +49,7 @@ def export_entry_md(entry_id):
         ), 200
 
 @e_bp.route('/export-snippet-md/v1/<int:snippet_id>',methods=['GET'])
+@jwt_required()
 def export_snippet_md(snippet_id):
     '''
     Export the selected entry in the form of a Markdown (.md) file using the provided snippet id
@@ -83,6 +89,7 @@ def export_snippet_md(snippet_id):
         ), 200
 
 @e_bp.route('/export-snippet-json/v1/<int:snippet_id>',methods=['GET'])
+@jwt_required()
 def export_snippet_json(snippet_id):
     '''
     Export the selected snippet in the form of a json (.json) file using the provided entry id
@@ -124,6 +131,7 @@ def export_snippet_json(snippet_id):
         ), 200
 
 @e_bp.route('/export-entry-json/v1/<int:entry_id>',methods=['GET'])
+@jwt_required()
 def export_entry_json(entry_id):
     '''
     Export the selected entry in the form of a json (.json) file using the provided entry id

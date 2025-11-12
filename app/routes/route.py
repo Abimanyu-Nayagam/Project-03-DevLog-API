@@ -2,12 +2,14 @@ from flask import Blueprint, request, jsonify
 from app.models.db_models import Entry, Snippet, db
 from app.models.models import CreateEntryRequest, CreateSnippetRequest, UpdateEntryRequest, UpdateSnippetRequest
 from sqlalchemy import or_
+from flask_jwt_extended import jwt_required
 
 bp = Blueprint('routes', __name__)
 
 # Insertion 
 
 @bp.route('/api/v1/snippets', methods=['POST'])
+@jwt_required()
 def create_code():
     """Insert a new Code.
 
@@ -61,6 +63,7 @@ def create_code():
 
 
 @bp.route('/api/v1/entries', methods=['POST'])
+@jwt_required()
 def create_entry():
     """Insert a new Entry.
 
@@ -112,6 +115,7 @@ def create_entry():
 
 # Display
 @bp.route('/api/v1/entries', methods=['GET'])
+@jwt_required()
 def get_entries():
     """Retrieve all entries.
 
@@ -137,6 +141,7 @@ def get_entries():
     return jsonify(entries_list), 200
 
 @bp.route('/api/v1/snippets', methods=['GET'])
+@jwt_required()
 def get_snippets():
     """Retrieve all snippets.
 
@@ -163,6 +168,7 @@ def get_snippets():
     return jsonify(snippets_list), 200
 
 @bp.route('/api/v1/entries/<int:id>', methods=['GET'])
+@jwt_required()
 def get_entry(id):
     """Retrieve an entry by ID.
     Returns the entry (JSON) with status 200 on success, or JSON error with appropriate status code.
@@ -188,6 +194,7 @@ def get_entry(id):
     return jsonify(entry_data), 200
 
 @bp.route('/api/v1/snippets/<int:id>', methods=['GET'])
+@jwt_required()
 def get_snippet(id):
     """Retrieve an snippet by ID.
     Returns the entry (JSON) with status 200 on success, or JSON error with appropriate status code.
@@ -214,6 +221,7 @@ def get_snippet(id):
     return jsonify(snippet_data), 200
 
 @bp.route('/api/v1/snippets/<int:id>', methods=['DELETE'])
+@jwt_required()
 def delete_snippet(id):
     """Delete a snippet by ID.
     Returns status 204 on success, or JSON error with appropriate status code.
@@ -236,6 +244,7 @@ def delete_snippet(id):
     return jsonify({'Success': f'Deleted Snippet -- {id}'}), 200
 
 @bp.route('/api/v1/entries/<int:id>', methods=['DELETE'])
+@jwt_required()
 def delete_entries(id):
     """Delete a entries by ID.
     Returns status 204 on success, or JSON error with appropriate status code.
@@ -259,6 +268,7 @@ def delete_entries(id):
 
 #update exisitng entry
 @bp.route('/api/v1/entries', methods=['PATCH'])
+@jwt_required()
 def update_entry():
     """Update an existing entry by ID."""
     data = request.get_json()
@@ -297,6 +307,7 @@ def update_entry():
 
 
 @bp.route('/api/v1/snippets', methods=['PATCH'])
+@jwt_required()
 def update_snippet():
     """Update an existing snippet by ID."""
     data = request.get_json()
@@ -338,6 +349,7 @@ def update_snippet():
 
 # search entries 
 @bp.route('/api/v1/entries/search', methods=['GET'])
+@jwt_required()
 def search_entries():
     """Search entries by title, content, or tags."""
     query = request.args.get('q')
@@ -368,6 +380,7 @@ def search_entries():
 
 
 @bp.route('/api/v1/snippets/search', methods=['GET'])
+@jwt_required()
 def search_snippets():
     """Search snippets by title, code, tags, or language."""
     query = request.args.get('q')
@@ -399,6 +412,7 @@ def search_snippets():
     return jsonify(snippets_list), 200
 
 @bp.route('/api/v1/snippets/filter/tag/<string:tag>', methods=['GET'])
+@jwt_required()
 def filter_snippet_by_tag(tag):
     """Retrieve an snippet by tags.
     Returns the snippet (JSON) with status 200 on success, or JSON error with appropriate status code.
@@ -424,6 +438,7 @@ def filter_snippet_by_tag(tag):
     return jsonify(snippets_data), 200
 
 @bp.route('/api/v1/snippets/filter/language/<string:lang>', methods=['GET'])
+@jwt_required()
 def filter_snippet_by_lang(lang):
     """Retrieve an snippet by language.
     Returns the snippet (JSON) with status 200 on success, or JSON error with appropriate status code.
@@ -449,6 +464,7 @@ def filter_snippet_by_lang(lang):
     return jsonify(snippets_data), 200
 
 @bp.route('/api/v1/entries/filter/tag/<string:tag>', methods=['GET'])
+@jwt_required()
 def filter_entry_by_tag(tag):
     """Retrieve an entry by tags.
     Returns the entry (JSON) with status 200 on success, or JSON error with appropriate status code.
@@ -474,6 +490,7 @@ def filter_entry_by_tag(tag):
     return jsonify(entry_data), 200
 
 @bp.route('/api/v1/entries/filter/title/<string:title>', methods=['GET'])
+@jwt_required()
 def filter_entry_by_title(title):
     """Retrieve an entry by title.
     Returns the entry (JSON) with status 200 on success, or JSON error with appropriate status code.
@@ -499,6 +516,7 @@ def filter_entry_by_title(title):
     return jsonify(entry_data), 200
 
 @bp.route('/api/v1/snippets/filter/title/<string:title>', methods=['GET'])
+@jwt_required()
 def filter_snippet_by_title(title):
     """Retrieve a snippet by title.
     Returns the snippet (JSON) with status 200 on success, or JSON error with appropriate status code.
