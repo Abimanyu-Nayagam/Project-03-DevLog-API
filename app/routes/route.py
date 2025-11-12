@@ -351,19 +351,39 @@ def update_snippet():
 @bp.route('/api/v1/entries/search', methods=['GET'])
 @jwt_required()
 def search_entries():
-    """Search entries by title, content, or tags."""
+    """fuzzy search entries by title, content, or tags."""
     query = request.args.get('q')
     if not query:
         return jsonify({'error': 'Search query (q) is required'}), 400
 
     try:
-        results = Entry.query.filter(
-            or_(
-                Entry.title.ilike(f'%{query}%'),
-                Entry.content.ilike(f'%{query}%'),
-                Entry.tags.ilike(f'%{query}%')
+        # Split the query into individual words
+        search_terms = query.strip().split()
+        
+        conditions = []
+        for term in search_terms:
+            term_pattern = f'%{term}%'
+            conditions.append(
+                or_(
+                    Entry.title.ilike(term_pattern),
+                    Entry.content.ilike(term_pattern),
+                    Entry.tags.ilike(term_pattern)
+                )
             )
-        ).all()
+        results = Entry.query.filter(and_(*conditions)).all()
+        
+        # SQL equivalent:
+        """
+        SELECT * FROM entry
+        WHERE (
+        (title ILIKE '%lecture%' OR content ILIKE '%lecture%' OR tags ILIKE '%lecture%')
+        AND
+        (title ILIKE '%1%' OR content ILIKE '%1%' OR tags ILIKE '%1%')
+        AND
+        (title ILIKE '%python%' OR content ILIKE '%python%' OR tags ILIKE '%python%')
+        );
+        """
+
     except Exception as exc:
         return jsonify({'error': 'Database error', 'details': str(exc)}), 500
 
@@ -382,20 +402,40 @@ def search_entries():
 @bp.route('/api/v1/snippets/search', methods=['GET'])
 @jwt_required()
 def search_snippets():
-    """Search snippets by title, code, tags, or language."""
+    """fuzzy search snippet by title, code, language or tags."""
     query = request.args.get('q')
     if not query:
         return jsonify({'error': 'Search query (q) is required'}), 400
 
     try:
-        results = Snippet.query.filter(
-            or_(
-                Snippet.title.ilike(f'%{query}%'),
-                Snippet.code.ilike(f'%{query}%'),
-                Snippet.tags.ilike(f'%{query}%'),
-                Snippet.language.ilike(f'%{query}%')
+        # Split the query into individual words
+        search_terms = query.strip().split()
+        
+        conditions = []
+        for term in search_terms:
+            term_pattern = f'%{term}%'
+            conditions.append(
+                or_(
+                    Snippet.title.ilike(term_pattern),
+                    Snippet.code.ilike(term_pattern),
+                    Snippet.tags.ilike(term_pattern),
+                    Snippet.language.ilike(term_pattern)
+                )
             )
-        ).all()
+        results = Snippet.query.filter(and_(*conditions)).all()
+        
+        # SQL equivalent:
+        """
+        SELECT * FROM snippet
+        WHERE (
+        (title ILIKE '%lecture%' OR code ILIKE '%lecture%' OR tags ILIKE '%lecture%' OR language ILIKE '%lecture%')
+        AND
+        (title ILIKE '%1%' OR code ILIKE '%1%' OR tags ILIKE '%1%' OR language ILIKE '%1%')
+        AND
+        (title ILIKE '%python%' OR code ILIKE '%python%' OR tags ILIKE '%python%' OR language ILIKE '%python%')
+        );
+        """
+
     except Exception as exc:
         return jsonify({'error': 'Database error', 'details': str(exc)}), 500
 
