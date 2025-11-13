@@ -1,8 +1,8 @@
 from flask import Blueprint, request, jsonify
 from app.models.db_models import Entry, Snippet, db
 from app.models.models import CreateEntryRequest, CreateSnippetRequest, UpdateEntryRequest, UpdateSnippetRequest
-from sqlalchemy import or_
-from flask_jwt_extended import jwt_required
+from sqlalchemy import or_, and_
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
 bp = Blueprint('routes', __name__)
 
@@ -35,13 +35,14 @@ def create_code():
     snippets = data.get('snippet')
     tags = data.get('tags')
     language = data.get('language')
+    description = data.get('description')
 
     if not title:
         return jsonify({'error': '"title" is required.'}), 400  #Validate Each value
     if not snippets:
         return jsonify({'error': '"snippets" is required.'}), 400
    
-    code_entry = Snippet(title=title, code=snippets, tags=tags, language=language)  # ORM or model object for code
+    code_entry = Snippet(title=title, code=snippets, tags=tags, language=language, user_id=get_jwt_identity(), description=description)  # ORM or model object for code
     
     try:
         db.session.add(code_entry) # insert the new entry
@@ -94,7 +95,7 @@ def create_entry():
     if not content:
         return jsonify({'error': '"content" is required.'}), 400
 
-    entry = Entry(title=title, content=content, tags=tags)  # ORM or model object for entry
+    entry = Entry(title=title, content=content, tags=tags, user_id=get_jwt_identity())  # ORM or model object for entry
 
     try:
         db.session.add(entry) # insert the new entry
@@ -123,7 +124,7 @@ def get_entries():
     appropriate status code.
     """
     try:
-        entries = Entry.query.all() # query.all to get all entries
+        entries = Entry.query.get(user_id=get_jwt_identity()) # query.all to get all entries
     except Exception as exc:
         return jsonify({'error': 'Database error', 'details': str(exc)}), 500
 
@@ -149,7 +150,7 @@ def get_snippets():
     appropriate status code.
     """
     try:
-        snippets = Snippet.query.all() # query.all to get all code snippets
+        snippets = Snippet.query.get(user_id=get_jwt_identity()) # query.all to get all code snippets
     except Exception as exc:
         return jsonify({'error': 'Database error', 'details': str(exc)}), 500
 
@@ -176,7 +177,7 @@ def get_entry(id):
     if type(id) is not int:
         return jsonify({'error': 'ID must be an integer'}), 400
     try:
-        entry = Entry.query.get(id)
+        entry = Entry.query.filter_by(id=id, user_id=get_jwt_identity())
         if not entry:
             return jsonify({'error': 'Entry not found'}), 404
     except Exception as exc:
@@ -202,7 +203,7 @@ def get_snippet(id):
     if type(id) is not int:
         return jsonify({'error': 'ID must be an integer'}), 400
     try:
-        snippet = Snippet.query.get(id)
+        snippet = Snippet.query.filter_by(id=id, user_id=get_jwt_identity())
         if not snippet:
             return jsonify({'error': 'Snippet not found'}), 404
     except Exception as exc:
@@ -231,7 +232,7 @@ def delete_snippet(id):
         return jsonify({'error': 'ID must be an integer'}), 400
     
     try:
-        snippet = Snippet.query.get(id)
+        snippet = Snippet.query.filter_by(id=id, user_id=get_jwt_identity())
         if not snippet:
             return jsonify({'error': 'Snippet not found'}), 404
 
@@ -254,7 +255,7 @@ def delete_entries(id):
         return jsonify({'error': 'ID must be an integer'}), 400
 
     try:
-        entry = Entry.query.get(id)
+        entry = Entry.query.filter_by(id=id, user_id=get_jwt_identity())
         if not entry:
             return jsonify({'error': 'Entry not found'}), 404
 
@@ -282,7 +283,7 @@ def update_entry():
     if not data:
         return jsonify({'error': 'Request must be JSON'}), 400
 
-    entry = Entry.query.get(data['id'])
+    entry = Entry.query.filter_by(id=data['id'], user_id=get_jwt_identity())
     if not entry:
         return jsonify({'error': 'Entry not found'}), 404
 
@@ -321,7 +322,7 @@ def update_snippet():
     if not data:
         return jsonify({'error': 'Request must be JSON'}), 400
 
-    snippet = Snippet.query.get(data['id'])
+    snippet = Snippet.query.filter_by(id=data['id'], user_id=get_jwt_identity())
     if not snippet:
         return jsonify({'error': 'Snippet not found'}), 404
 
@@ -370,7 +371,7 @@ def search_entries():
                     Entry.tags.ilike(term_pattern)
                 )
             )
-        results = Entry.query.filter(and_(*conditions)).all()
+        results = Entry.query.filter(and_(Entry.user_id == get_jwt_identity(), or_(*conditions))).all()
         
         # SQL equivalent:
         """
@@ -422,7 +423,7 @@ def search_snippets():
                     Snippet.language.ilike(term_pattern)
                 )
             )
-        results = Snippet.query.filter(and_(*conditions)).all()
+        results = Snippet.query.filter(and_(Snippet.user_id == get_jwt_identity(),or_(*conditions))).all()
         
         # SQL equivalent:
         """
@@ -458,7 +459,7 @@ def filter_snippet_by_tag(tag):
     Returns the snippet (JSON) with status 200 on success, or JSON error with appropriate status code.
     """
     try:
-        snippets = Snippet.query.filter(Snippet.tags.contains(tag)).all()
+        snippets = Snippet.query.filter(Snippet.user_id==get_jwt_identity(), Snippet.tags.contains(tag)).all()
         if not snippets:
             return jsonify({'error': 'No snippets found'}), 404
     except Exception as exc:
@@ -484,7 +485,7 @@ def filter_snippet_by_lang(lang):
     Returns the snippet (JSON) with status 200 on success, or JSON error with appropriate status code.
     """
     try:
-        snippets = Snippet.query.filter(Snippet.language.contains(lang)).all()
+        snippets = Snippet.query.filter(Snippet.user_id==get_jwt_identity(), Snippet.language.contains(lang)).all()
         if not snippets:
             return jsonify({'error': 'No snippets found'}), 404
     except Exception as exc:
@@ -510,7 +511,7 @@ def filter_entry_by_tag(tag):
     Returns the entry (JSON) with status 200 on success, or JSON error with appropriate status code.
     """
     try:
-        entries = Entry.query.filter(Entry.tags.contains(tag)).all()
+        entries = Entry.query.filter(Entry.user_id==get_jwt_identity(), Entry.tags.contains(tag)).all()
         if not entries:
             return jsonify({'error': 'No entries found'}), 404
     except Exception as exc:
@@ -536,7 +537,7 @@ def filter_entry_by_title(title):
     Returns the entry (JSON) with status 200 on success, or JSON error with appropriate status code.
     """
     try:
-        entries = Entry.query.filter(Entry.title.contains(title)).all()
+        entries = Entry.query.filter(Entry.user_id==get_jwt_identity(), Entry.title.contains(title)).all()
         if not entries:
             return jsonify({'error': 'No entries found'}), 404
     except Exception as exc:
@@ -562,7 +563,7 @@ def filter_snippet_by_title(title):
     Returns the snippet (JSON) with status 200 on success, or JSON error with appropriate status code.
     """
     try:
-        snippets = Snippet.query.filter(Snippet.title.contains(title)).all()
+        snippets = Snippet.query.filter(Snippet.user_id==get_jwt_identity(), Snippet.title.contains(title)).all()
         if not snippets:
             return jsonify({'error': 'No snippets found'}), 404
     except Exception as exc:

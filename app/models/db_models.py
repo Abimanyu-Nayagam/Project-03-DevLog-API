@@ -30,6 +30,7 @@ class Snippet(db.Model):
     id = db.Column(db.Integer, primary_key=True)  
     title = db.Column(db.String(255), nullable=False, index=True)  
     code = db.Column(db.Text, nullable=False)
+    description = db.Column(db.String(255), nullable=False, index=False)
     language = db.Column(db.String(50), nullable=False, index=True) 
     tags = db.Column(db.String(500), index=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)

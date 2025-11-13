@@ -26,7 +26,7 @@ def export_entry_md(entry_id):
     if not id:
         return jsonify({'error': 'id is required for exporting.'}), 400  #Validate Each value
     
-    entry = Entry.query.get(id)
+    entry = Entry.query.filter_by(id=id, user_id=current_user_id).first()
 
     if not entry:
         return jsonify({'error': 'Entry not found'}), 404
@@ -66,7 +66,7 @@ def export_snippet_md(snippet_id):
     if not id:
         return jsonify({'error': 'id is required for exporting.'}), 400  #Validate Each value
     
-    snippet = Snippet.query.get(id)
+    snippet = Snippet.query.filter_by(id=id, user_id=get_jwt_identity()).first()
 
     if not snippet:
         return jsonify({'error': 'Entry not found'}), 404
@@ -105,7 +105,7 @@ def export_snippet_json(snippet_id):
     if not id:
         return jsonify({'error': 'id is required for exporting.'}), 400  #Validate Each value
     
-    snippet = Snippet.query.get(id)
+    snippet = Snippet.query.filter_by(id=id, user_id=get_jwt_identity()).first()
 
     if not snippet:
         return jsonify({'error': 'Entry not found'}), 404
@@ -148,7 +148,7 @@ def export_entry_json(entry_id):
     if not id:
         return jsonify({'error': 'id is required for exporting.'}), 400  #Validate Each value
     
-    entry = Entry.query.get(id)
+    entry = Entry.query.filter_by(id=id, user_id=get_jwt_identity()).first()
 
     if not entry:
         return jsonify({'error': 'Entry not found'}), 404
