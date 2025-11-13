@@ -124,7 +124,7 @@ def get_entries():
     appropriate status code.
     """
     try:
-        entries = Entry.query.get(user_id=get_jwt_identity()) # query.all to get all entries
+        entries = Entry.query.filter_by(user_id=get_jwt_identity()) # query.all to get all entries
     except Exception as exc:
         return jsonify({'error': 'Database error', 'details': str(exc)}), 500
 
@@ -150,7 +150,7 @@ def get_snippets():
     appropriate status code.
     """
     try:
-        snippets = Snippet.query.get(user_id=get_jwt_identity()) # query.all to get all code snippets
+        snippets = Snippet.query.filter_by(user_id=get_jwt_identity()) # query.all to get all code snippets
     except Exception as exc:
         return jsonify({'error': 'Database error', 'details': str(exc)}), 500
 
@@ -177,7 +177,7 @@ def get_entry(id):
     if type(id) is not int:
         return jsonify({'error': 'ID must be an integer'}), 400
     try:
-        entry = Entry.query.filter_by(id=id, user_id=get_jwt_identity())
+        entry = Entry.query.filter_by(id=id, user_id=get_jwt_identity()).first()
         if not entry:
             return jsonify({'error': 'Entry not found'}), 404
     except Exception as exc:
@@ -203,7 +203,7 @@ def get_snippet(id):
     if type(id) is not int:
         return jsonify({'error': 'ID must be an integer'}), 400
     try:
-        snippet = Snippet.query.filter_by(id=id, user_id=get_jwt_identity())
+        snippet = Snippet.query.filter_by(id=id, user_id=get_jwt_identity()).first()
         if not snippet:
             return jsonify({'error': 'Snippet not found'}), 404
     except Exception as exc:
@@ -283,7 +283,7 @@ def update_entry():
     if not data:
         return jsonify({'error': 'Request must be JSON'}), 400
 
-    entry = Entry.query.filter_by(id=data['id'], user_id=get_jwt_identity())
+    entry = Entry.query.filter_by(id=data['id'], user_id=get_jwt_identity()).first()
     if not entry:
         return jsonify({'error': 'Entry not found'}), 404
 
@@ -322,7 +322,7 @@ def update_snippet():
     if not data:
         return jsonify({'error': 'Request must be JSON'}), 400
 
-    snippet = Snippet.query.filter_by(id=data['id'], user_id=get_jwt_identity())
+    snippet = Snippet.query.filter_by(id=data['id'], user_id=get_jwt_identity()).first()
     if not snippet:
         return jsonify({'error': 'Snippet not found'}), 404
 
