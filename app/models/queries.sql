@@ -15,6 +15,7 @@ CREATE TABLE entries (
     title VARCHAR(255) NOT NULL,
     content TEXT NOT NULL,
     tags VARCHAR(500),
+    user_id int foreign key references users(id),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
@@ -31,6 +32,7 @@ CREATE TABLE snippets (
     code TEXT NOT NULL,
     language VARCHAR(50) NOT NULL,
     tags VARCHAR(500),
+    user_id int foreign key references users(id),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
