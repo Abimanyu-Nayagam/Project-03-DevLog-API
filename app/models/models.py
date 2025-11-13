@@ -7,6 +7,7 @@ class CreateSnippetRequest(BaseModel):
     title: str
     language: str
     snippet: str
+    description: str | None = None
     tags: str | None = None
 
 class CreateEntryRequest(BaseModel):
@@ -32,3 +33,10 @@ class UpdateEntryRequest(BaseModel):
     title: str | None = None
     content: str | None = None
     tags: str | None = None
+
+class CreateUserRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    email: str
+    username: str
+    password: str
