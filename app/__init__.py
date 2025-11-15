@@ -5,9 +5,9 @@ from .routes.export_route import e_bp as export_routes_bp
 from .routes.auth import auth_bp, jwt
 from config.config import Config
 
-def create_app():
+def create_app(config_class=Config):
     app = Flask(__name__)
-    app.config.from_object(Config)
+    app.config.from_object(config_class)
     db.init_app(app)
     jwt.init_app(app)
     app.register_blueprint(routes_bp) #Register the route blueprint
