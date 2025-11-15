@@ -1,47 +1,94 @@
+// ============================================
+// LOGIN.JSX - User Login Page
+// ============================================
+// This page allows existing users to log into the app
+// When login is successful, we receive a token from the server
+
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
+// Get API base URL from environment variables (configured in .env file)
 const API_BASE = import.meta.env.VITE_API_BASE || ''
 
+// Main login component
+// Receives setToken and setUsername functions from parent (App.jsx)
 export default function Login({ setToken, setUsername }){
-  const [username, setUser] = useState('')
-  const [password, setPassword] = useState('')
-  const [msg, setMsg] = useState('')
-  const navigate = useNavigate()
+  // State variables - these store data that can change
+  // When these change, React automatically re-renders the component
+  
+  const [username, setUser] = useState('') // Store username input
+  const [password, setPassword] = useState('') // Store password input
+  const [msg, setMsg] = useState('') // Store success/error messages
+  const navigate = useNavigate() // Hook to navigate to different pages
 
+  // Function that runs when user submits the login form
   async function onSubmit(e){
-    setMsg('')
+    e.preventDefault() // Prevent form from refreshing the page (default behavior)
+    setMsg('') // Clear any previous messages
+    
     try{
+      // Make HTTP POST request to login endpoint
       const res = await fetch(`${API_BASE}/login`, {
-        method: 'POST',
-        headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({username, password})
+        method: 'POST', // POST method to send data
+        headers: {'Content-Type':'application/json'}, // Tell server we're sending JSON
+        body: JSON.stringify({username, password}) // Convert data to JSON string
       })
+      
+      // Parse the response from server as JSON
       const data = await res.json()
+      
+      // Check if login was successful
       if(res.ok){
-        setToken(data.access_token)
-        setUsername(data.username)
-        navigate('/entries')
+        // Success! Save token and username to parent component
+        setToken(data.access_token) // This token proves we're logged in
+        setUsername(data.username) // Save username to display in nav
+        navigate('/entries') // Redirect to entries page
       } else {
+        // Login failed - show error message
         setMsg(data.error || data.message || 'Login failed')
       }
-    }catch(err){ setMsg(String(err)) }
+    }catch(err){ 
+      // If request completely fails (network error, etc)
+      setMsg(String(err)) 
+    }
   }
 
+  // Return JSX - the HTML-like code that displays the login form
   return (
-    <div className="panel" style={{maxWidth:560}}>
+    <div className="panel" style={{maxWidth:560, margin:'0 auto'}}>
       <div className="h-title">Login</div>
+      
+      {/* Form - when submitted, calls onSubmit function */}
       <form onSubmit={onSubmit} style={{marginTop:12}}>
+        
+        {/* Username input field */}
         <div className="form-row">
           <label>Username</label>
-          <input className="input" value={username} onChange={e=>setUser(e.target.value)} />
+          {/* value={username} shows current state */}
+          {/* onChange updates state when user types */}
+          <input 
+            className="input" 
+            value={username} 
+            onChange={e=>setUser(e.target.value)} 
+          />
         </div>
+        
+        {/* Password input field */}
         <div className="form-row">
           <label>Password</label>
-          <input className="input" type="password" value={password} onChange={e=>setPassword(e.target.value)} />
+          {/* type="password" hides the password text */}
+          <input 
+            className="input" 
+            type="password" 
+            value={password} 
+            onChange={e=>setPassword(e.target.value)} 
+          />
         </div>
+        
+        {/* Submit button and message display */}
         <div style={{display:'flex',gap:8,alignItems:'center'}}>
           <button className="btn" type="submit">Login</button>
+          {/* Display success/error message if exists */}
           <div className="small muted">{msg}</div>
         </div>
       </form>

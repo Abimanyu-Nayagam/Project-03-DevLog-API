@@ -1,0 +1,554 @@
+
+:root {
+  --bg-primary: #1e1e1e;        /* Main background - used in body, code blocks */
+  --bg-secondary: #252526;      /* Panels, cards, nav background */
+  --bg-hover: #2a2d2e;          /* Hover states for links and buttons */
+  --bg-input: #3c3c3c;          /* Input fields, textareas, select dropdowns */
+  --border-color: #454545;      /* Borders for panels, inputs, items */
+  --text-primary: #cccccc;      /* Main text color */
+  --text-secondary: #858585;    /* Muted text, labels, metadata */
+  --accent-blue: #0e639c;       /* Primary buttons, links, focus states */
+  --accent-blue-hover: #1177bb; /* Hover state for blue buttons */
+  --accent-green: #0e8a16;      /* Success buttons, export buttons */
+  --accent-red: #f14c4c;        /* Danger buttons, delete, errors */
+}
+
+/* ============================================
+   GLOBAL RESET & BASE STYLES
+   ============================================
+   Applied to all elements across the app
+   ============================================ */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* ============================================
+   BODY - Base page styling
+   ============================================
+   Used: All pages (Login, Register, Entries, Snippets)
+   ============================================ */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.6;
+}
+
+/* ============================================
+   APP-ROOT - Main container
+   ============================================
+   Used: App.jsx - wraps entire application
+   ============================================ */
+.app-root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ============================================
+   NAVIGATION BAR
+   ============================================
+   Used: App.jsx - Top navigation with logo and links
+   Contains: Brand logo, navigation links, user info
+   ============================================ */
+.nav {
+  background-color: var(--bg-secondary);
+  padding: 12px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border-color);
+}
+
+/* Brand/Logo section - left side of navbar */
+.nav-left {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* Links section - right side of navbar */
+.nav-right {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+/* Navigation links styling */
+.nav-right a {
+  color: var(--text-primary);
+  text-decoration: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.nav-right a:hover {
+  background-color: var(--bg-hover);
+}
+
+/* ============================================
+   MAIN CONTENT AREA
+   ============================================
+   Used: App.jsx - Wraps page content
+   Contains: All page components (Login, Register, Entries, Snippets)
+   ============================================ */
+main {
+  flex: 1;
+  padding: 24px;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* ============================================
+   PANEL/CARD COMPONENT
+   ============================================
+   Used: All pages for content containers
+   - Login.jsx: Login form panel
+   - Register.jsx: Registration form panel
+   - Entries.jsx: Create form, search panel, entries list panel
+   - Snippets.jsx: Create form, search panel, snippets list panel
+   ============================================ */
+.panel {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 20px;
+  margin-bottom: 16px;
+}
+
+/* ============================================
+   HEADERS & TITLES
+   ============================================
+   Used: All pages for section titles
+   ============================================ */
+   
+/* Main title for panels */
+/* Used in: Login/Register forms, Create Entry/Snippet forms, List headers */
+.h-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+}
+
+/* Subtitle for subsections */
+.h-subtitle {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+/* ============================================
+   FORM ELEMENTS
+   ============================================
+   Used: Login, Register, Entries, Snippets forms
+   ============================================ */
+
+/* Form row container - wraps label and input */
+/* Used in: All forms (Login, Register, Create Entry, Create Snippet) */
+.form-row {
+  margin-bottom: 12px;
+}
+
+/* Form labels */
+/* Used in: All input fields across Login, Register, Entries, Snippets */
+.form-row label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+/* Input with button container - for auto-generate buttons */
+/* Used in:
+   - Entries.jsx: Title and Tags fields with auto-generate
+   - Snippets.jsx: Title, Description, and Tags fields with auto-generate */
+.input-with-button {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.input-with-button .input {
+  flex: 1; /* Input takes remaining space */
+}
+
+.input-with-button button {
+  flex-shrink: 0; /* Button doesn't shrink */
+  white-space: nowrap; /* Keep button text on one line */
+}
+
+/* Input fields and textareas */
+/* Used in:
+   - Login.jsx: username/email, password inputs
+   - Register.jsx: email, username, password inputs
+   - Entries.jsx: title, content, tags inputs
+   - Snippets.jsx: title, language, code, description, tags inputs */
+.input {
+  width: 100%;
+  padding: 8px 12px;
+  background-color: var(--bg-input);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  color: var(--text-primary);
+  font-size: 14px;
+  font-family: inherit;
+}
+
+/* Input focus state - blue border when active */
+.input:focus {
+  outline: none;
+  border-color: var(--accent-blue);
+}
+
+/* Textarea specific styling */
+/* Used in:
+   - Entries.jsx: content textarea (6 rows)
+   - Snippets.jsx: code textarea (8 rows), description textarea (3 rows) */
+textarea.input {
+  min-height: 80px;
+  resize: vertical;
+  font-family: 'Courier New', monospace;
+}
+
+/* ============================================
+   BUTTONS
+   ============================================
+   Used: All pages for actions and navigation
+   ============================================ */
+
+/* Primary button - blue accent color */
+/* Used in:
+   - Login.jsx: Login button
+   - Register.jsx: Register button
+   - Entries.jsx: Create/Update Entry, Search, Filter buttons
+   - Snippets.jsx: Create/Update Snippet, Search, Filter buttons */
+.btn {
+  padding: 8px 16px;
+  background-color: var(--accent-blue);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.btn:hover {
+  background-color: var(--accent-blue-hover);
+}
+
+/* Small button - for action buttons in lists */
+/* Used in:
+   - Entries.jsx: Edit, Delete, Export MD, Export JSON buttons
+   - Snippets.jsx: Edit, Delete, Export MD, Export JSON buttons */
+.btn-small {
+  padding: 4px 8px;
+  font-size: 12px;
+}
+
+/* Danger button - red for destructive actions */
+/* Used in:
+   - Entries.jsx: Delete Entry, Cancel Edit, Clear Search buttons
+   - Snippets.jsx: Delete Snippet, Cancel Edit, Clear Search buttons */
+.btn-danger {
+  background-color: var(--accent-red);
+}
+
+.btn-danger:hover {
+  background-color: #d43f3f;
+}
+
+/* Success button - green for export actions */
+/* Used in:
+   - Entries.jsx: Export MD, Export JSON buttons
+   - Snippets.jsx: Export MD, Export JSON buttons */
+.btn-success {
+  background-color: var(--accent-green);
+}
+
+.btn-success:hover {
+  background-color: #0c7a14;
+}
+
+/* Link-style button - minimal styling */
+/* Used in: App.jsx navbar - Logout button */
+.btn-link {
+  background: none;
+  color: var(--text-primary);
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  border: none;
+  font-size: 14px;
+  transition: background-color 0.2s;
+}
+
+.btn-link:hover {
+  background-color: var(--bg-hover);
+}
+
+/* ============================================
+   TEXT UTILITIES
+   ============================================
+   Used: All pages for text styling variations
+   ============================================ */
+
+/* Small text - 13px font size */
+/* Used in:
+   - All pages: Timestamps, metadata, helper text
+   - Entries.jsx: Date display in item headers
+   - Snippets.jsx: Date display in item headers */
+.small {
+  font-size: 13px;
+}
+
+/* Muted text - gray color for less important text */
+/* Used in:
+   - All pages: Labels, dates, helper text, "No entries found" messages
+   - Entries.jsx: Tags metadata, empty state message
+   - Snippets.jsx: Tags metadata, empty state message */
+.muted {
+  color: var(--text-secondary);
+}
+
+/* Error text - red for error messages */
+/* Used in: All forms for validation errors */
+.error {
+  color: var(--accent-red);
+}
+
+/* Success text - green for success messages */
+/* Used in: All forms for success confirmations */
+.success {
+  color: var(--accent-green);
+}
+
+/* ============================================
+   LIST ITEMS - Collapsible Entry/Snippet Cards
+   ============================================
+   Used: Entries.jsx and Snippets.jsx for displaying lists
+   ============================================ */
+
+/* Individual item card */
+/* Used in:
+   - Entries.jsx: Each dev log entry in the list
+   - Snippets.jsx: Each code snippet in the list */
+.item {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  padding: 16px;
+  margin-bottom: 12px;
+}
+
+/* Hover effect - blue border on hover */
+.item:hover {
+  border-color: var(--accent-blue);
+}
+
+/* Item header - clickable area to expand/collapse */
+/* Contains: Title with arrow icon, date */
+/* Used in: Both Entries.jsx and Snippets.jsx */
+.item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
+/* Title with expand/collapse arrow */
+/* Used in:
+   - Entries.jsx: "▶ Entry Title" or "▼ Entry Title"
+   - Snippets.jsx: "▶ Snippet Title" or "▼ Snippet Title" */
+.item-title {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+/* Action buttons container - Edit, Delete, Export */
+/* Used in:
+   - Entries.jsx: Edit, Export MD, Export JSON, Delete buttons
+   - Snippets.jsx: Edit, Export MD, Export JSON, Delete buttons */
+.item-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* Item content/body text */
+/* Used in:
+   - Entries.jsx: Entry content text (dev log body)
+   - Snippets.jsx: Snippet description text */
+.item-content {
+  color: var(--text-secondary);
+  font-size: 14px;
+  margin-bottom: 8px;
+  white-space: pre-wrap;      /* Preserves line breaks */
+  word-wrap: break-word;      /* Breaks long words */
+}
+
+/* Metadata container - tags, language, etc. */
+/* Used in:
+   - Entries.jsx: Container for tags display
+   - Snippets.jsx: Container for tags display */
+.item-meta {
+  display: flex;
+  gap: 12px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+/* ============================================
+   TAGS - Badges for categorization
+   ============================================
+   Used: Entries and Snippets for tags and language badges
+   ============================================ */
+
+/* Tag badge styling */
+/* Used in:
+   - Entries.jsx: Tag badges (react, javascript, etc.)
+   - Snippets.jsx: Language badge, Tag badges */
+.tag {
+  display: inline-block;
+  background-color: var(--bg-input);
+  color: var(--text-primary);
+  padding: 2px 8px;
+  border-radius: 3px;
+  font-size: 12px;
+  margin-right: 4px;
+  margin-bottom: 4px;
+}
+
+/* ============================================
+   CODE BLOCK - Syntax display for snippets
+   ============================================
+   Used: Snippets.jsx only - displays code with formatting
+   ============================================ */
+
+/* Code block container */
+/* Used in: Snippets.jsx - wraps the <pre> tag with code content */
+.code-block {
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  padding: 12px;
+  margin: 8px 0;
+  overflow-x: auto;             /* Allows horizontal scrolling for long code lines */
+}
+
+/* Code text formatting */
+/* Preserves formatting and uses monospace font */
+.code-block pre {
+  margin: 0;
+  font-family: 'Courier New', monospace;
+  font-size: 13px;
+  color: var(--text-primary);
+}
+
+/* ============================================
+   SEARCH BAR - Search and filter controls
+   ============================================
+   Used: Entries.jsx and Snippets.jsx for search/filter
+   ============================================ */
+
+/* Search bar container */
+/* Contains: Search input, Search/Filter button, Clear button */
+/* Used in:
+   - Entries.jsx: Search entries by keyword, filter by tag/title
+   - Snippets.jsx: Search snippets by keyword, filter by language/tag */
+.search-bar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+/* Search input - takes up remaining space */
+.search-bar .input {
+  flex: 1;
+}
+
+/* ============================================
+   FLEX UTILITIES - Layout helpers
+   ============================================
+   Used: Various pages for flexible layouts
+   ============================================ */
+
+/* Basic flexbox display */
+/* Used in:
+   - All forms: Button groups with multiple buttons
+   - Entries.jsx: Action button groups
+   - Snippets.jsx: Action button groups */
+.flex {
+  display: flex;
+}
+
+/* Flex with 8px gap between items */
+/* Used in:
+   - All forms: Spacing between buttons in button groups
+   - Entries.jsx: Space between Edit, Export, Delete buttons
+   - Snippets.jsx: Space between Edit, Export, Delete buttons */
+.flex-gap {
+  gap: 8px;
+}
+
+/* Flex with space-between justification */
+/* Used for: Headers with content on left and right sides */
+.flex-between {
+  justify-content: space-between;
+}
+
+/* Flex with wrapping enabled */
+/* Used for: Responsive layouts that wrap on smaller screens */
+.flex-wrap {
+  flex-wrap: wrap;
+}
+
+/* ============================================
+   SPACING UTILITIES - Margin helpers
+   ============================================
+   Used: Various pages for consistent spacing
+   ============================================ */
+
+/* Margin bottom - 8px */
+.mb-8 {
+  margin-bottom: 8px;
+}
+
+/* Margin bottom - 12px */
+.mb-12 {
+  margin-bottom: 12px;
+}
+
+/* Margin bottom - 16px */
+.mb-16 {
+  margin-bottom: 16px;
+}
+
+/* Margin top - 12px */
+.mt-12 {
+  margin-top: 12px;
+}
+
+/* ============================================
+   LOADING STATE
+   ============================================
+   Used: Entries.jsx and Snippets.jsx while fetching data
+   ============================================ */
+
+/* Loading spinner/message */
+/* Used in:
+   - Entries.jsx: "Loading your entries..." message
+   - Snippets.jsx: "Loading your snippets..." message
+   - Displayed while API fetch is in progress */
+.loading {
+  text-align: center;
+  padding: 24px;
+  color: var(--text-secondary);
+}
