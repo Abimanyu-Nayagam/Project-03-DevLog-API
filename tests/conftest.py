@@ -18,3 +18,27 @@ def test_app():
 @pytest.fixture
 def client(test_app):
     return test_app.test_client()
+
+@pytest.fixture
+def auth_client(test_app):
+    client = test_app.test_client()
+
+    # Register a user
+    client.post("/register", json={
+        "email": "testauth@example.com",
+        "username": "authuser",
+        "password": "password123"
+    })
+
+    # Login to get access token
+    res = client.post("/login", json={
+        "username": "authuser",
+        "password": "password123"
+    })
+
+    token = res.get_json()["access_token"]
+
+    # Attach token to headers automatically
+    client.environ_base["HTTP_AUTHORIZATION"] = f"Bearer {token}"
+
+    return client

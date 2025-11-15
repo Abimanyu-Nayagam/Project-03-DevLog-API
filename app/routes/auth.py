@@ -30,7 +30,7 @@ def register():
     # Check if user already exists
     existing_user = User.query.filter((User.email == email) | (User.username == username)).first()
     if existing_user:
-        return jsonify({"error": "User with this email or username already exists"}), 400
+        return jsonify({"error": "User with this email or username already exists"}), 409
     
     # Hash the password
     hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')

@@ -64,7 +64,7 @@ def test_register_duplicate_user(client):
         "password": "pass"
     })
 
-    assert res.status_code == 400
+    assert res.status_code == 409
     assert "already exists" in res.get_json()["error"]
 
 
@@ -104,3 +104,11 @@ def test_login_success(client):
         "username": "loginuser",
         "password": "mypassword"
     })
+    # Now login
+    res = client.post("/login", json={
+        "username": "loginuser",
+        "password": "mypassword"
+    })
+    assert res.status_code == 200
+    data = res.get_json()
+    assert "access_token" in data
