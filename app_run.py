@@ -3,9 +3,12 @@ import subprocess
 
 try:
     load_dotenv(override=True)
-    commands =["flask", "run"]
-    subprocess.run(commands)
-    print("Flask Server Started successfully")
+    print("Starting Flask server...")
+    subprocess.Popen(["flask", "run"])
+    print("Flask server started successfully")
+    print("Starting React server...")
+    subprocess.Popen(["npm", "run", "dev"],shell=True)
+    print("React server started successfully")
 except FileNotFoundError as fileerror:
     print(".env file not found")
 except subprocess.CalledProcessError as commanderror:
