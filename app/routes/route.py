@@ -232,7 +232,7 @@ def delete_snippet(id):
         return jsonify({'error': 'ID must be an integer'}), 400
     
     try:
-        snippet = Snippet.query.filter_by(id=id, user_id=get_jwt_identity())
+        snippet = Snippet.query.filter_by(id=id, user_id=get_jwt_identity()).first()
         if not snippet:
             return jsonify({'error': 'Snippet not found'}), 404
 
@@ -255,7 +255,7 @@ def delete_entries(id):
         return jsonify({'error': 'ID must be an integer'}), 400
 
     try:
-        entry = Entry.query.filter_by(id=id, user_id=get_jwt_identity())
+        entry = Entry.query.filter_by(id=id, user_id=get_jwt_identity()).first()
         if not entry:
             return jsonify({'error': 'Entry not found'}), 404
 
@@ -497,6 +497,7 @@ def filter_snippet_by_lang(lang):
         'id': snippet.id,
         'title': snippet.title,
         'snippet': snippet.code,
+        'language': snippet.language,
         'tags': snippet.tags,
         'created_at': snippet.created_at.isoformat() if snippet.created_at else None,
         'updated_at': snippet.updated_at.isoformat() if snippet.updated_at else None,

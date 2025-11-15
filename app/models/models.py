@@ -7,7 +7,7 @@ class CreateSnippetRequest(BaseModel):
     title: str
     language: str
     snippet: str
-    description: str | None = None
+    description: str
     tags: str | None = None
 
 class CreateEntryRequest(BaseModel):
