@@ -19,6 +19,7 @@ A RESTful API for managing developer journal entries and code snippets. Built wi
 - Implemented a **CI/CD pipeline** using GitHub Actions for automated build and testing.
 - Deployed the application on **AWS EC2** for scalable and reliable hosting.
 - Developed a **web-based frontend using React** to interact with the application.
+- Displayed code snippets with proper syntax formatting using ```Rich``` for cli interface and ```SyntaxHighlighter``` for web interface
 - Implemented **consistent, machine-readable success and error responses** across the API.
 
 **Tech stack & integrations**
