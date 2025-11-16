@@ -11,6 +11,8 @@
 
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
+import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism'
 
 // Get API base URL from environment variables
 const API_BASE = import.meta.env.VITE_API_BASE || ''
@@ -526,10 +528,10 @@ export default function Snippets({ apiHeaders, token }) {
             <label>Code</label>
             <textarea 
               className="input" 
-              value={code} // Controlled input
-              onChange={e => setCode(e.target.value)} // Update state
+              value={code}
+              onChange={e => setCode(e.target.value)}
               placeholder="Paste your code here..."
-              rows="8" // Tall textarea for code
+              rows="8"
             />
             <div className="small muted" style={{ marginTop: '4px' }}>
               💡 Tip: Enter your code first, then use Auto-Generate buttons for title, description, and tags
@@ -729,12 +731,29 @@ export default function Snippets({ apiHeaders, token }) {
                   )}
                   
                   {/* Code block - displays the actual code snippet */}
-                  <div className="code-block">
-                    {/* 
-                      <pre> preserves formatting (whitespace, line breaks)
-                      Backend might return "snippet" or "code" field - handle both
-                    */}
-                    <pre>{snippet.snippet || snippet.code}</pre>
+                  <div className="code-block" style={{ margin: '12px 0' }}>
+                    <div style={{ 
+                      backgroundColor: '#2d2d2d', 
+                      padding: '4px 8px', 
+                      borderRadius: '4px 4px 0 0',
+                      color: '#888',
+                      fontSize: '12px',
+                      fontFamily: 'monospace'
+                    }}>
+                      {snippet.language}
+                    </div>
+                    <SyntaxHighlighter
+                      language={snippet.language.toLowerCase()}
+                      style={vscDarkPlus}
+                      customStyle={{
+                        margin: 0,
+                        borderRadius: '0 0 4px 4px',
+                        fontSize: '14px'
+                      }}
+                      showLineNumbers={true}
+                    >
+                      {snippet.snippet || snippet.code}
+                    </SyntaxHighlighter>
                   </div>
                   
                   {/* Tags section */}
