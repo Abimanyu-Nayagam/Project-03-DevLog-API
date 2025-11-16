@@ -4,9 +4,10 @@ import requests
 from rich.console import Console
 from rich.syntax import Syntax
 from rich.markdown import Markdown
+from pathlib import Path
 console = Console()
 
-token = ""
+TOKEN_FILE = Path(__file__).parent / '.devlog_token'
 
 ##Register function in CLI
 def register_user():
@@ -36,9 +37,7 @@ def register_user():
 
 ## login function in CLI
 def login_user():
-    """Login a user and store JWT token globally."""
-    global token
-
+    """Login a user and store JWT token to file."""
     url = "http://localhost:5000/login"
 
     username = input("Enter username: ")
@@ -53,9 +52,13 @@ def login_user():
         data = res.json()
 
         if res.status_code == 200:
-            token = data.get("access_token")
+            access_token = data.get("access_token")
+            try:
+                TOKEN_FILE.write_text(access_token)
+            except Exception:
+                pass
             print("Login successful!")
-            print("Token saved.")
+            print(f"Token saved to {TOKEN_FILE}")
         else:
             print("Login failed:", data)
 
@@ -63,25 +66,42 @@ def login_user():
         print(f"Error during login: {e}")
 
 
+def logout_user():
+    """Clear saved token file."""
+    try:
+        if TOKEN_FILE.exists():
+            TOKEN_FILE.unlink()
+            print(f"Logged out and removed token file {TOKEN_FILE}")
+        else:
+            print("Logged out (no token file found)")
+    except Exception as e:
+        print(f"Logout error: {e}")
+
+
+def get_token():
+    """Read token from file if available."""
+    try:
+        if TOKEN_FILE.exists():
+            return TOKEN_FILE.read_text().strip()
+    except Exception:
+        pass
+    return ""
+
+
 def create_snippet():
-
-    """Insert a new Code.
-
-    Expects JSON body with:
-      - language (str, required)
-      - snippet (str, required)
-      - tags (str, optional)
-"""
-    global token
+    """Create a new snippet with optional auto-generation for title/tags/description."""
+    token = get_token()
     if not token:
         print("Please login first.")
         return
-    
+
     url = "http://localhost:5000/api/v1/snippets"
-    title = input("Enter snippet title: ")
-    
-    # Multi-line code input
-    print("Enter snippet code (press Ctrl+Z and enter when done)")
+    headers = {"Authorization": f"Bearer {token}"}
+
+    title = input("Enter snippet title (leave blank to auto-generate): ").strip()
+    language = input("Enter snippet language: ").strip()
+
+    print("Enter snippet code (press Ctrl+Z then Enter when done):")
     code_lines = []
     try:
         while True:
@@ -89,18 +109,52 @@ def create_snippet():
             code_lines.append(line)
     except EOFError:
         pass
-    code = "\n".join(code_lines)
-    
-    tags = input("Enter snippet tags (comma-separated): ")
-    language = input("Enter snippet language: ")
+    code = "\n".join(code_lines).strip()
 
-    headers = {"Authorization": f"Bearer {token}"}
+    tags = input("Enter snippet tags (comma-separated, leave blank to auto-generate): ").strip()
+    description = input("Enter snippet description (leave blank to auto-generate): ").strip()
+
+    # Auto-generate fields as requested
+    try:
+        if not title:
+            resp = requests.post("http://localhost:5000/autogen/title", json={"content": code}, headers=headers)
+            if resp.ok:
+                title = resp.json().get("title") or title
+                if title:
+                    print(f"Auto-generated title: {title}")
+        if not tags:
+            payload = {"content": code}
+            if language:
+                payload["language"] = language
+            if title:
+                payload["title"] = title
+            resp = requests.post("http://localhost:5000/autogen/tags", json=payload, headers=headers)
+            if resp.ok:
+                tags = resp.json().get("tags") or tags
+                if tags:
+                    print(f"Auto-generated tags: {tags}")
+        if not description:
+            payload = {"content": code}
+            if language:
+                payload["language"] = language
+            if title:
+                payload["title"] = title
+            resp = requests.post("http://localhost:5000/autogen/description", json=payload, headers=headers)
+            if resp.ok:
+                description = resp.json().get("description") or description
+                if description:
+                    print("Auto-generated description:")
+                    print(description)
+    except requests.exceptions.RequestException:
+        pass
+
     try:
         res = requests.post(url, json={
             "title": title,
             "snippet": code,
             "tags": tags,
-            "language": language
+            "language": language,
+            "description": description
         },  headers=headers)
         result = res.json()
         if result.get('id'):
@@ -111,15 +165,17 @@ def create_snippet():
             print(f"Failed to create snippet: {e}")
 
 def create_entry():
-    global token
+    token = get_token()
     if not token:
         print("Please login first.")
         return
 
     url = "http://localhost:5000/api/v1/entries"
-    title = input("Enter entry title: ")
-    
-    print("Enter entry content (press Ctrl+Z and enter when done): ")
+    headers = {"Authorization": f"Bearer {token}"}
+
+    title = input("Enter entry title (leave blank to auto-generate): ").strip()
+
+    print("Enter entry content (press Ctrl+Z then Enter when done):")
     content_lines = []
     try:
         while True:
@@ -127,11 +183,29 @@ def create_entry():
             content_lines.append(line)
     except EOFError:
         pass
-    content = "\n".join(content_lines)
-    
-    tags = input("Enter entry tags (comma-separated): ")
-    
-    headers = {"Authorization": f"Bearer {token}"}
+    content = "\n".join(content_lines).strip()
+
+    tags = input("Enter entry tags (comma-separated, leave blank to auto-generate): ").strip()
+
+    # Auto-generate fields as requested
+    try:
+        if not title:
+            resp = requests.post("http://localhost:5000/autogen/title", json={"content": content}, headers=headers)
+            if resp.ok:
+                title = resp.json().get("title") or title
+                if title:
+                    print(f"Auto-generated title: {title}")
+        if not tags:
+            payload = {"content": content, "language": "markdown"}
+            if title:
+                payload["title"] = title
+            resp = requests.post("http://localhost:5000/autogen/tags", json=payload, headers=headers)
+            if resp.ok:
+                tags = resp.json().get("tags") or tags
+                if tags:
+                    print(f"Auto-generated tags: {tags}")
+    except requests.exceptions.RequestException:
+        pass
 
     try:
         res = requests.post(url, json={
@@ -149,13 +223,11 @@ def create_entry():
         print(f"Failed to create entry: {e}")
 
 def show_snippets():
-
-    global token
+    """Retrieve all snippets"""
+    token = get_token()
     if not token:
         print("Please login first.")
         return
-
-    """Retrieve all snippets"""
 
     url = "http://localhost:5000/api/v1/snippets"
     headers = {"Authorization": f"Bearer {token}"}
@@ -170,12 +242,16 @@ def show_snippets():
                 "title": snip.get("title"),
                 "language": snip.get("language"),
                 "tags": snip.get("tags"),
+                "description": snip.get("description", "")
             }
             print(code_info)
             console.print("-" * 100)
             console.print(
                 Syntax(snip.get("snippet", ""), snip.get("language", "text"), line_numbers=True)
             )
+            if snip.get("description"):
+                console.print("\nDescription:\n")
+                console.print(snip.get("description"))
             console.print("-" * 100)
             console.print("-" * 100)
 
@@ -184,15 +260,13 @@ def show_snippets():
 
 
 def show_entries():
-
-    global token
+    """Retrieve all entries"""
+    token = get_token()
     if not token:
         print("Please login first.")
         return
 
-    """Retrieve all entries"""
-
-    url = "http://localhost://localhost:5000/api/v1/entries"
+    url = "http://localhost:5000/api/v1/entries"
     headers = {"Authorization": f"Bearer {token}"}
 
     try:
@@ -216,13 +290,11 @@ def show_entries():
         console.print(f"Failed to retrieve snippets: {e}")
 
 def show_snippet(snippet_id):
-
-    global token
+    """Retrieve single snippet by id"""
+    token = get_token()
     if not token:
         print("Please login first.")
         return
-
-    """Retrieve single snippet by id"""
 
     url = f"http://localhost:5000/api/v1/snippets/{snippet_id}"
     headers = {"Authorization": f"Bearer {token}"}
@@ -239,23 +311,27 @@ def show_snippet(snippet_id):
             "title": snippet.get("title"),
             "language": snippet.get("language"),
             "tags": snippet.get("tags"),
+            "description": snippet.get("description", "")
         })
         console.print("-" * 100)
         console.print(
             Syntax(snippet.get("snippet", ""), snippet.get("language", "text"), line_numbers=True)
         )
+        console.print("-" * 100)
+        if snippet.get("description"):
+            console.print("\nDescription:")
+            console.print(snippet.get("description"))
+            console.print("-" * 100)
     except requests.exceptions.RequestException as e:
         console.print(f"Failed to retrieve snippet: {e}")
 
 
 def show_entry(entry_id):
-
-    global token
+    """Retrieve single entry by Id"""
+    token = get_token()
     if not token:
         print("Please login first.")
         return
-
-    """Retrieve single entry by Id"""
 
     url = f"http://localhost:5000/api/v1/entries/{entry_id}"
     headers = {"Authorization": f"Bearer {token}"}
@@ -281,13 +357,12 @@ def show_entry(entry_id):
 
 
 def delete_snippet(snippet_id):
-
-    global token
+    """Delete a snippet by id."""
+    token = get_token()
     if not token:
         print("Please login first.")
         return
 
-    """Delete a snippet by id."""
     url = f"http://localhost:5000/api/v1/snippets/{snippet_id}"
     headers = {"Authorization": f"Bearer {token}"}
 
@@ -303,13 +378,12 @@ def delete_snippet(snippet_id):
 
 
 def delete_entry(entry_id):
-
-    global token
+    """Delete an entry by id."""
+    token = get_token()
     if not token:
         print("Please login first.")
         return
 
-    """Delete an entry by id."""
     url = f"http://localhost:5000/api/v1/entries/{entry_id}"
     headers = {"Authorization": f"Bearer {token}"}
 
@@ -325,45 +399,7 @@ def delete_entry(entry_id):
 
 
 def filter_snippets_by_tag(tag):
-
-    global token
-    if not token:
-        print("Please login first.")
-        return
-
-    url = f"http://127.0.0.1:5000/api/v1/snippets/filter/tag/{tag}"
-    headers = {"Authorization": f"Bearer {token}"}
-
-    try:
-        res = requests.get(url, headers=headers)
-        snippets = res.json()
-
-        if 'error' in snippets:
-            print({'error': 'no snippets found with the given tag'})
-            return
-
-        for snippet in snippets:
-            snippets_info = {
-                "title": snippet.get("title"),
-                "language": snippet.get("language"),
-                "tags": snippet.get("tags"),
-            }
-            print(snippets_info)
-            console.print("-" * 100)
-            console.print(
-                Syntax(snippet.get("snippet", ""), snippet.get("language", "text"), line_numbers=True)
-            )
-            console.print("-" * 100)
-            console.print("-" * 100)
-
-    except requests.exceptions.RequestException as e:
-        console.print(f"Failed to retrieve snippets: {e}")
-
-
-
-def filter_snippets_by_tag(tag):
-
-    global token
+    token = get_token()
     if not token:
         print("Please login first.")
         return
@@ -397,8 +433,7 @@ def filter_snippets_by_tag(tag):
         console.print(f"Failed to retrieve snippets: {e}")
 
 def filter_entries_by_tag(tag):
-
-    global token
+    token = get_token()
     if not token:
         print("Please login first.")
         return
@@ -431,8 +466,7 @@ def filter_entries_by_tag(tag):
 
 
 def filter_entries_by_title(title):
-
-    global token
+    token = get_token()
     if not token:
         print("Please login first.")
         return
@@ -465,8 +499,7 @@ def filter_entries_by_title(title):
         console.print(f"Failed to retrieve snippets: {e}")
 
 def filter_snippets_by_title(title):
-
-    global token
+    token = get_token()
     if not token:
         print("Please login first.")
         return
@@ -491,7 +524,7 @@ def filter_snippets_by_title(title):
             print(snippets_info)
             console.print("-" * 100)
             console.print(
-                Syntax(snippet.get("code", ""), snippet.get("language", "text"), line_numbers=True)
+                Syntax(snippet.get("snippet", ""), snippet.get("language", "text"), line_numbers=True)
             )
             console.print("-" * 100)
             console.print("-" * 100)
@@ -500,8 +533,7 @@ def filter_snippets_by_title(title):
         console.print(f"Failed to retrieve snippets: {e}")
 
 def filter_snippets_by_lang(language):
-
-    global token
+    token = get_token()
     if not token:
         print("Please login first.")
         return
@@ -535,8 +567,7 @@ def filter_snippets_by_lang(language):
         console.print(f"Failed to retrieve snippets: {e}")
 
 def download_snippet_md():
-
-    global token
+    token = get_token()
     if not token:
         print("Please login first.")
         return
@@ -555,8 +586,7 @@ def download_snippet_md():
 
 
 def download_snippet_json():
-
-    global token
+    token = get_token()
     if not token:
         print("Please login first.")
         return
@@ -575,8 +605,7 @@ def download_snippet_json():
 
 
 def download_entry_md():
-
-    global token
+    token = get_token()
     if not token:
         print("Please login first.")
         return
@@ -595,8 +624,7 @@ def download_entry_md():
 
 
 def download_entry_json():
-
-    global token
+    token = get_token()
     if not token:
         print("Please login first.")
         return
@@ -614,8 +642,7 @@ def download_entry_json():
         console.print(f"Failed to download snippet: {e}")
 
 def update_snippet(snippet_id):
-
-    global token
+    token = get_token()
     if not token:
         print("Please login first.")
         return
@@ -626,26 +653,97 @@ def update_snippet(snippet_id):
     try:
         res = requests.get(fetch_url, headers=headers)
         snippet = res.json()
-        print(f"Current Snippet Data for id {snippet_id}:")
-        print(snippet)
 
         if snippet.get('error'):
             print({'error': 'snippet not found'})
             return
+
+        # Display current snippet in formatted way
+        print("\nCurrent Snippet:")
+        print(f"Title: {snippet.get('title')}")
+        print(f"Language: {snippet.get('language')}")
+        print(f"Tags: {snippet.get('tags')}")
+        if snippet.get('description'):
+            print(f"Description: {snippet.get('description')}")
+        print("\nCode:")
+        print("-" * 100)
+        print(
+            Syntax(snippet.get("snippet", ""), snippet.get("language", "text"), line_numbers=True)
+        )
+        print("-" * 100)
+        print("\n")
+
     except requests.exceptions.RequestException as e:
         console.print(f"Failed to retrieve snippet: {e}")
         return
+
+    update_url = f"http://127.0.0.1:5000/api/v1/snippets"
+
+    print("Update fields (leave blank to keep current, or type 'auto' to auto-generate):\n")
     
-    update_url=f"http://127.0.0.1:5000/api/v1/snippets"
+    title = input(f"Title [{snippet.get('title')}]: ").strip()
+    language = input(f"Language [{snippet.get('language')}]: ").strip()
+    tags = input(f"Tags [{snippet.get('tags')}]: ").strip()
+    description = input(f"Description [{snippet.get('description', '')}]: ").strip()
+    
+    print("\nCode (press Ctrl+Z then Enter when done, or leave empty to keep current):")
+    code_lines = []
+    try:
+        while True:
+            line = input()
+            code_lines.append(line)
+    except EOFError:
+        pass
+    code = "\n".join(code_lines).strip()
 
-    print("Add information for any field you wish to update, else leave it blank.")
-    title = input("Title: ")
-    tags = input("Tags (comma-separated): ")
-    language = input("Language: ")
-    code = input("Code: ")
+    # Determine what content to use for auto-generation
+    content_for_gen = code if code else snippet.get("snippet", "")
+    lang_for_gen = language if language else snippet.get("language", "")
+    title_for_gen = title if title and title != 'auto' else snippet.get("title", "")
 
+    # Auto-generate fields
+    try:
+        if title == 'auto' or (not title and not snippet.get('title')):
+            yn = input("\nAuto-generate title? [y/N]: ").strip().lower()
+            if yn == 'y':
+                resp = requests.post("http://localhost:5000/autogen/title", json={"content": content_for_gen}, headers=headers)
+                if resp.ok:
+                    title = resp.json().get("title", "")
+                    if title:
+                        print(f"Auto-generated title: {title}")
+
+        if tags == 'auto' or (not tags and not snippet.get('tags')):
+            yn = input("Auto-generate tags? [y/N]: ").strip().lower()
+            if yn == 'y':
+                payload = {"content": content_for_gen}
+                if lang_for_gen:
+                    payload["language"] = lang_for_gen
+                if title_for_gen:
+                    payload["title"] = title_for_gen
+                resp = requests.post("http://localhost:5000/autogen/tags", json=payload, headers=headers)
+                if resp.ok:
+                    tags = resp.json().get("tags", "")
+                    if tags:
+                        print(f"Auto-generated tags: {tags}")
+
+        if description == 'auto' or (not description and not snippet.get('description')):
+            yn = input("Auto-generate description? [y/N]: ").strip().lower()
+            if yn == 'y':
+                payload = {"content": content_for_gen}
+                if lang_for_gen:
+                    payload["language"] = lang_for_gen
+                if title_for_gen:
+                    payload["title"] = title_for_gen
+                resp = requests.post("http://localhost:5000/autogen/description", json=payload, headers=headers)
+                if resp.ok:
+                    description = resp.json().get("description", "")
+                    if description:
+                        print(f"Auto-generated description: {description}")
+    except requests.exceptions.RequestException:
+        pass
+
+    # Build update payload with only changed fields
     update = {"id": snippet_id}
-
     if title:
         update["title"] = title
     if code:
@@ -654,18 +752,34 @@ def update_snippet(snippet_id):
         update["tags"] = tags
     if language:
         update["language"] = language
-    
+    if description:
+        update["description"] = description
+
     try:
         res = requests.patch(update_url, json=update, headers=headers)
         result = res.json()
-        print(result)
+        
+        # Display updated snippet in formatted way
+        print("\nSnippet Updated Successfully!\n")
+        print("Updated Snippet:")
+        print(f"Title: {result.get('title')}")
+        print(f"Language: {result.get('language')}")
+        print(f"Tags: {result.get('tags')}")
+        if result.get('description'):
+            print(f"Description: {result.get('description')}")
+        print("\nCode:")
+        print("-" * 100)
+        print(
+            Syntax(result.get("snippet", ""), result.get("language", "text"), line_numbers=True)
+        )
+        print("-" * 100)
+        
     except requests.exceptions.RequestException as e:
         print(f"Failed to update snippet: {e}")
 
 
 def update_entry(entry_id):
-
-    global token
+    token = get_token()
     if not token:
         print("Please login first.")
         return
@@ -676,43 +790,100 @@ def update_entry(entry_id):
     try:
         res = requests.get(fetch_url, headers=headers)
         entry = res.json()
-        print(f"Current Entry Data for id {entry_id}:")
-        print(entry)
 
         if entry.get('error'):
             print({'error': 'entry not found'})
             return
+
+        # Display current entry in formatted way
+        print("\nCurrent Entry:")
+        print(f"Title: {entry.get('title')}")
+        print(f"Tags: {entry.get('tags')}")
+        print("\nContent:")
+        print("-" * 100)
+        print(entry.get("content", ""))
+        print("-" * 100)
+        print("\n")
+
     except requests.exceptions.RequestException as e:
-        console.print(f"Failed to retrieve entry: {e}")
+        print(f"Failed to retrieve entry: {e}")
         return
+
+    update_url = f"http://127.0.0.1:5000/api/v1/entries"
+
+    print("Update fields (leave blank to keep current, or type 'auto' to auto-generate):\n")
     
-    update_url=f"http://127.0.0.1:5000/api/v1/entries"
+    title = input(f"Title [{entry.get('title')}]: ").strip()
+    tags = input(f"Tags [{entry.get('tags')}]: ").strip()
+    
+    print("\nContent (press Ctrl+Z then Enter when done, or leave empty to keep current):")
+    content_lines = []
+    try:
+        while True:
+            line = input()
+            content_lines.append(line)
+    except EOFError:
+        pass
+    content = "\n".join(content_lines).strip()
 
-    print("Add information for any field you wish to update, else leave it blank.")
-    title = input("Title: ")
-    tags = input("Tags (comma-separated): ")
-    content = input("content: ")
+    # Determine what content to use for auto-generation
+    content_for_gen = content if content else entry.get("content", "")
+    title_for_gen = title if title and title != 'auto' else entry.get("title", "")
 
+    # Auto-generate fields
+    try:
+        if title == 'auto' or (not title and not entry.get('title')):
+            yn = input("\nAuto-generate title? [y/N]: ").strip().lower()
+            if yn == 'y':
+                resp = requests.post("http://localhost:5000/autogen/title", json={"content": content_for_gen}, headers=headers)
+                if resp.ok:
+                    title = resp.json().get("title", "")
+                    if title:
+                        print(f"Auto-generated title: {title}")
+
+        if tags == 'auto' or (not tags and not entry.get('tags')):
+            yn = input("Auto-generate tags? [y/N]: ").strip().lower()
+            if yn == 'y':
+                payload = {"content": content_for_gen, "language": "markdown"}
+                if title_for_gen:
+                    payload["title"] = title_for_gen
+                resp = requests.post("http://localhost:5000/autogen/tags", json=payload, headers=headers)
+                if resp.ok:
+                    tags = resp.json().get("tags", "")
+                    if tags:
+                        print(f"Auto-generated tags: {tags}")
+    except requests.exceptions.RequestException:
+        pass
+
+    # Build update payload with only changed fields
     update = {"id": entry_id}
-
     if title:
         update["title"] = title
     if content:
         update["content"] = content
     if tags:
         update["tags"] = tags
-    
+
     try:
         res = requests.patch(update_url, json=update, headers=headers)
         result = res.json()
-        print(result)
+        
+        # Display updated entry in formatted way
+        print("\nEntry Updated Successfully!\n")
+        print("Updated Entry:")
+        print(f"Title: {result.get('title')}")
+        print(f"Tags: {result.get('tags')}")
+        print("\nContent:")
+        print("-" * 100)
+        console.print(Markdown(result.get("content", "")))
+        print("-" * 100)
+        
     except requests.exceptions.RequestException as e:
         print(f"Failed to update entry: {e}")
 
 # Function to call the search route for snippets
 def search_snippets(query):
-
-    global token
+    token = get_token()
     if not token:
         print("Please login first.")
         return
@@ -742,8 +913,7 @@ def search_snippets(query):
 
 # Function to call the search route for snippets
 def search_entries(query):
-
-    global token
+    token = get_token()
     if not token:
         print("Please login first.")
         return
@@ -769,6 +939,7 @@ def search_entries(query):
     except requests.exceptions.RequestException as e:
         console.print(f"Failed to search snippets: {e}")
 
+
 def main():
     parser = argparse.ArgumentParser(
         description="DevLog CLI — manage snippets and entries"
@@ -778,6 +949,7 @@ def main():
 
     subparsers.add_parser('register', help='Register a new user')
     subparsers.add_parser('login', help='Login a user')
+    subparsers.add_parser('logout', help='Logout user and clear saved token')
 
 
     subparsers.add_parser('create-snippet', help='Create a new snippet')
@@ -819,30 +991,56 @@ def main():
     args = parser.parse_args()
 
     match args.command:
-        case 'register': register_user()
-        case 'login': login_user()
-        case 'create-snippet': create_snippet()
-        case 'create-entry': create_entry()
-        case 'show-snippets': show_snippets()
-        case 'show-entries': show_entries()
-        case 'show-snippet': show_snippet(args.id)
-        case 'show-entry': show_entry(args.id)
-        case 'update-snippet': update_snippet(args.id)
-        case 'update-entry': update_entry(args.id)
-        case 'delete-snippet': delete_snippet(args.id)
-        case 'delete-entry': delete_entry(args.id)
-        case 'download-snippet-md': download_snippet_md()
-        case 'download-snippet-json': download_snippet_json()
-        case 'download-entry-md': download_entry_md()
-        case 'download-entry-json': download_entry_json()
-        case 'filter-snippet-tag': filter_snippets_by_tag(args.tag),
-        case 'filter-entry-tag': filter_entries_by_tag(args.tag),
-        case 'filter-snippet-title': filter_snippets_by_title(args.title),
-        case 'filter-entry-title': filter_entries_by_title(args.title),
-        case 'filter-snippet-lang': filter_snippets_by_lang(args.lang),
-        case 'search-snippet': search_snippets(args.query),
-        case 'search-entry': search_entries(args.query),
-        case _: parser.print_help()
+        case 'register':
+            register_user()
+        case 'login':
+            login_user()
+        case 'create-snippet':
+            create_snippet()
+        case 'create-entry':
+            create_entry()
+        case 'show-snippets':
+            show_snippets()
+        case 'show-entries':
+            show_entries()
+        case 'show-snippet':
+            show_snippet(args.id)
+        case 'show-entry':
+            show_entry(args.id)
+        case 'update-snippet':
+            update_snippet(args.id)
+        case 'update-entry':
+            update_entry(args.id)
+        case 'delete-snippet':
+            delete_snippet(args.id)
+        case 'delete-entry':
+            delete_entry(args.id)
+        case 'download-snippet-md':
+            download_snippet_md()
+        case 'download-snippet-json':
+            download_snippet_json()
+        case 'download-entry-md':
+            download_entry_md()
+        case 'download-entry-json':
+            download_entry_json()
+        case 'filter-snippet-tag':
+            filter_snippets_by_tag(args.tag)
+        case 'filter-entry-tag':
+            filter_entries_by_tag(args.tag)
+        case 'filter-snippet-title':
+            filter_snippets_by_title(args.title)
+        case 'filter-entry-title':
+            filter_entries_by_title(args.title)
+        case 'filter-snippet-lang':
+            filter_snippets_by_lang(args.lang)
+        case 'search-snippet':
+            search_snippets(args.query)
+        case 'search-entry':
+            search_entries(args.query)
+        case 'logout':
+            logout_user()
+        case _:
+            parser.print_help()
 
 
 if __name__ == '__main__':

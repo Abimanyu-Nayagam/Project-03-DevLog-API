@@ -25,6 +25,7 @@ class UpdateSnippetRequest(BaseModel):
     language: str | None = None
     snippet: str | None = None
     tags: str | None = None
+    description: str | None = None
 
 class UpdateEntryRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
