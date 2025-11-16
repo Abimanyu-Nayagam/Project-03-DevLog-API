@@ -162,6 +162,7 @@ def get_snippets():
             'snippet': snippets.code,
             'language': snippets.language,
             'tags': snippets.tags,
+            'description': snippets.description,
             'created_at': snippets.created_at.isoformat() if snippets.created_at else None,
             'updated_at': snippets.updated_at.isoformat() if snippets.updated_at else None,
         })
@@ -215,6 +216,7 @@ def get_snippet(id):
         'snippet': snippet.code,
         'tags': snippet.tags,
         'language': snippet.language,
+        'description': snippet.description,
         'created_at': snippet.created_at.isoformat() if snippet.created_at else None,
         'updated_at': snippet.updated_at.isoformat() if snippet.updated_at else None,
     }
@@ -232,7 +234,7 @@ def delete_snippet(id):
         return jsonify({'error': 'ID must be an integer'}), 400
     
     try:
-        snippet = Snippet.query.filter_by(id=id, user_id=get_jwt_identity())
+        snippet = Snippet.query.filter_by(id=id, user_id=get_jwt_identity()).first()
         if not snippet:
             return jsonify({'error': 'Snippet not found'}), 404
 
@@ -255,7 +257,7 @@ def delete_entries(id):
         return jsonify({'error': 'ID must be an integer'}), 400
 
     try:
-        entry = Entry.query.filter_by(id=id, user_id=get_jwt_identity())
+        entry = Entry.query.filter_by(id=id, user_id=get_jwt_identity()).first()
         if not entry:
             return jsonify({'error': 'Entry not found'}), 404
 
@@ -327,9 +329,10 @@ def update_snippet():
         return jsonify({'error': 'Snippet not found'}), 404
 
     snippet.title = data.get('title', snippet.title)
-    snippet.code = data.get('snippets', snippet.code)
+    snippet.code = data.get('snippet', snippet.code)
     snippet.tags = data.get('tags', snippet.tags)
     snippet.language = data.get('language', snippet.language)
+    snippet.description = data.get('description', snippet.description)
 
     try:
         db.session.commit()
@@ -339,6 +342,7 @@ def update_snippet():
             'snippet': snippet.code,
             'language': snippet.language,
             'tags': snippet.tags,
+            'description': snippet.description,
             'created_at': snippet.created_at.isoformat() if snippet.created_at else None,
             'updated_at': snippet.updated_at.isoformat() if snippet.updated_at else None,
         }), 200
@@ -497,6 +501,7 @@ def filter_snippet_by_lang(lang):
         'id': snippet.id,
         'title': snippet.title,
         'snippet': snippet.code,
+        'language': snippet.language,
         'tags': snippet.tags,
         'created_at': snippet.created_at.isoformat() if snippet.created_at else None,
         'updated_at': snippet.updated_at.isoformat() if snippet.updated_at else None,

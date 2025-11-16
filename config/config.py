@@ -19,3 +19,10 @@ class Config:
         f"mysql+pymysql://{MYSQL_USER}:{quote_plus(MYSQL_PASSWORD or '')}@{MYSQL_HOST}:{MYSQL_PORT}/{MYSQL_DB}"
     )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+class TestConfig(Config):
+    TESTING = True
+    SQLALCHEMY_DATABASE_URI = "sqlite:///:memory:"
+    JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY")
+    SECRET_KEY = os.getenv("SECRET_KEY")
+    JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours=1)

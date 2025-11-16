@@ -1,0 +1,30 @@
+version: "3.9"
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: devlog-backend
+    ports:
+      - "5000:5000"
+    env_file:
+      - .env        # backend gets everything
+    networks:
+      - devlog-network
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: devlog-frontend
+    ports:
+      - "80:80"
+    environment:
+      - VITE_API_BASE=${VITE_API_BASE}   # frontend gets ONLY this
+    networks:
+      - devlog-network
+
+networks:
+  devlog-network:
+    driver: bridge
