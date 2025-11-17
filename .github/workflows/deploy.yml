@@ -61,5 +61,5 @@ jobs:
               -e SECRET_KEY=${{ secrets.SECRET_KEY }} \
               -e JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }} \
               -e GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }} \
-              948098566408.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/backend:latest
+              948098566408.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/devlog-backend:latest
           EOF
