@@ -12,6 +12,11 @@ jobs:
       # Checkout the temporary merge commit
       - name: Checkout code
         uses: actions/checkout@v3
+
+      - name: Login to ECR
+        run: |
+          aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | \
+            docker login --username AWS --password-stdin 948098566408.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
         
       # Build backend image
       - name: Build backend Docker image
@@ -36,6 +41,7 @@ jobs:
           docker push 948098566408.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/devlog-frontend-ec2:latest
   deploy:
     runs-on: ubuntu-latest
+    needs: build-image-and-push
     steps:
       # Checkout the code
       - name: Checkout code
