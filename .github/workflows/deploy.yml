@@ -6,9 +6,49 @@ on:
       - main
 
 jobs:
+  build-image-and-push:
+      runs-on: ubuntu-latest
+      steps:
+      # Checkout the temporary merge commit
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Login to ECR
+        run: |
+          aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | \
+            docker login --username AWS --password-stdin 948098566408.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
+        
+      # Build backend image
+      - name: Build backend Docker image
+        run: |
+          docker build --no-cache -t devlog-backend -f Dockerfile.backend .
+          docker tag devlog-backend:latest 948098566408.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/devlog-backend:latest
+    
+      # Push backend image
+      - name: Push new backend image to ECR
+        run: |
+          docker push 948098566408.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/devlog-backend:latest
+    
+      # Build frontend image
+      - name: Build frontend Docker image
+        run: |
+          docker build --no-cache -t devlog-frontend-ec2 -f Dockerfile.frontend .
+          docker tag devlog-frontend-ec2:latest 948098566408.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/devlog-frontend-ec2:latest
+    
+      # Push frontend image
+      - name: Push frontend image to ECR
+        run: |
+          docker push 948098566408.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/devlog-frontend-ec2:latest
   deploy:
     runs-on: ubuntu-latest
-
+    needs: build-image-and-push
     steps:
       # Checkout the code
       - name: Checkout code
@@ -22,14 +62,12 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      # SSH into EC2 and deploy
       - name: Deploy to EC2
-        uses: appleboy/ssh-action@v0.1.6
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_SSH_KEY }}
-          script: |
+        run: |
+          echo "${{ secrets.EC2_SSH_KEY }}" > ec2_key.pem
+          chmod 400 ec2_key.pem
+
+          ssh -o StrictHostKeyChecking=no -i 'ec2_key.pem' ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} << 'EOF'
             # Login to ECR
             aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | \
               docker login --username AWS --password-stdin 948098566408.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
@@ -46,12 +84,12 @@ jobs:
             docker rmi -f $(docker images -aq) || true
 
             # Pull latest images from ECR
-            docker pull 948098566408.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/devlog-backend:latest
-            docker pull 948098566408.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/devlog-frontend-ec2:latest
+            docker pull --disable-content-trust=false 948098566408.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/devlog-backend:latest
+            docker pull --disable-content-trust=false 948098566408.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/devlog-frontend-ec2:latest
 
             # Run containers with secrets injected
             docker run -d --name frontend -p 80:80 \
-              -e VITE_API_BASE=${{ secrets.VITE_API_BASE }} \
+              -e VITE_API_BASE=${{ secrets.VITE_API_BASE }}:5000 \
               948098566408.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/devlog-frontend-ec2:latest
 
             docker run -d --name backend -p 5000:5000 \
@@ -63,4 +101,5 @@ jobs:
               -e SECRET_KEY=${{ secrets.SECRET_KEY }} \
               -e JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }} \
               -e GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }} \
-              948098566408.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/backend:latest
+              948098566408.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/devlog-backend:latest
+          EOF
