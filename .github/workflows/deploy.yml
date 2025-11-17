@@ -32,12 +32,7 @@ jobs:
           docker tag devlog-backend:latest 948098566408.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/devlog-backend:latest
     
       # Push backend image
-      - name: Delete existing and push new backend image to ECR
-        run: |
-          aws ecr batch-delete-image \
-            --repository-name devlog-backend \
-            --image-ids $(aws ecr list-images --repository-name devlog-backend --query 'imageIds[*]' --output json)
-
+      - name: Push new backend image to ECR
           docker push 948098566408.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/devlog-backend:latest
     
       # Build frontend image
@@ -47,12 +42,8 @@ jobs:
           docker tag devlog-frontend-ec2:latest 948098566408.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/devlog-frontend-ec2:latest
     
       # Push frontend image
-      - name: Delete existing and push frontend image to ECR
+      - name: Push frontend image to ECR
         run: |
-          aws ecr batch-delete-image \
-            --repository-name devlog-frontend-ec2 \
-            --image-ids $(aws ecr list-images --repository-name devlog-frontend-ec2 --query 'imageIds[*]' --output json)
-
           docker push 948098566408.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/devlog-frontend-ec2:latest
   deploy:
     runs-on: ubuntu-latest
