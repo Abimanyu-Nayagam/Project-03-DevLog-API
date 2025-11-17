@@ -9,6 +9,10 @@ jobs:
   build-image-and-push:
       runs-on: ubuntu-latest
       steps:
+      # Checkout the temporary merge commit
+      - name: Checkout code
+        uses: actions/checkout@v3
+        
       # Build backend image
       - name: Build backend Docker image
         run: |
