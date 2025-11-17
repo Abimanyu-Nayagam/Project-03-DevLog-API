@@ -23,6 +23,31 @@ export default function Snippets({ apiHeaders, token }) {
   const navigate = useNavigate() // Hook to navigate between pages
   
   // ============================================
+  // JWT TOKEN VALIDATION HELPER
+  // ============================================
+  // Check if response contains JWT error message (invalid/expired token)
+  // If so, clear auth data and redirect to login
+  const handleAuthError = (data) => {
+    if (data && data.msg) {
+      // JWT errors come with a "msg" key
+      // Common messages: "Token has expired", "Signature verification failed", etc.
+      const authErrors = ['token', 'expired', 'invalid', 'signature', 'authorization']
+      const isAuthError = authErrors.some(keyword => 
+        data.msg.toLowerCase().includes(keyword)
+      )
+      
+      if (isAuthError) {
+        // Token is invalid - clear localStorage and redirect to login
+        localStorage.removeItem('token')
+        localStorage.removeItem('username')
+        navigate('/login')
+        return true // Indicate we handled an auth error
+      }
+    }
+    return false // No auth error detected
+  }
+  
+  // ============================================
   // STATE VARIABLES - Store component data
   // ============================================
   
@@ -184,6 +209,9 @@ export default function Snippets({ apiHeaders, token }) {
       const data = await res.json()
       console.log('Fetched snippets data:', data) // Debug log
       
+      // Check for JWT authentication errors first
+      if (handleAuthError(data)) return // Token invalid - user redirected to login
+      
       // Check if request was successful
       if (res.ok) {
         // API might return array directly or wrapped in object
@@ -223,6 +251,9 @@ export default function Snippets({ apiHeaders, token }) {
         body: JSON.stringify({ title, snippet: code, language, tags, description })
       })
       const data = await res.json() // Parse response
+      
+      // Check for JWT authentication errors first
+      if (handleAuthError(data)) return // Token invalid - user redirected to login
       
       if (res.ok) {
         // Success! Show message and clear form
@@ -266,6 +297,9 @@ export default function Snippets({ apiHeaders, token }) {
       })
       const data = await res.json()
       
+      // Check for JWT authentication errors first
+      if (handleAuthError(data)) return // Token invalid - user redirected to login
+      
       if (res.ok) {
         // Success! Clear form and exit edit mode
         setMessage('Snippet updated successfully!')
@@ -301,6 +335,9 @@ export default function Snippets({ apiHeaders, token }) {
         headers: apiHeaders() // Auth token
       })
       const data = await res.json()
+      
+      // Check for JWT authentication errors first
+      if (handleAuthError(data)) return // Token invalid - user redirected to login
       
       if (res.ok) {
         // Success! Show message and refresh list
