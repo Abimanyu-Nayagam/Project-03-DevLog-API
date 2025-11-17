@@ -6,9 +6,32 @@ on:
       - main
 
 jobs:
+  build-image-and-push:
+      runs-on: ubuntu-latest
+      steps:
+      # Build backend image
+      - name: Build backend Docker image
+        run: |
+          docker build -t devlog-backend ./backend
+          docker tag devlog-backend:latest 948098566408.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/devlog-backend:latest
+    
+      # Push backend image
+      - name: Push backend image to ECR
+        run: |
+          docker push 948098566408.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/devlog-backend:latest
+    
+      # Build frontend image
+      - name: Build frontend Docker image
+        run: |
+          docker build -t devlog-frontend-ec2 ./frontend
+          docker tag devlog-frontend-ec2:latest 948098566408.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/devlog-frontend-ec2:latest
+    
+      # Push frontend image
+      - name: Push frontend image to ECR
+        run: |
+          docker push 948098566408.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/devlog-frontend-ec2:latest
   deploy:
     runs-on: ubuntu-latest
-
     steps:
       # Checkout the code
       - name: Checkout code
