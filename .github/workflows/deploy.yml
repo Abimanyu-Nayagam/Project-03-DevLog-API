@@ -33,6 +33,7 @@ jobs:
     
       # Push backend image
       - name: Push new backend image to ECR
+        run: |
           docker push 948098566408.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/devlog-backend:latest
     
       # Build frontend image
