@@ -3,6 +3,7 @@ from flask_bcrypt import Bcrypt
 from app.models.db_models import User, db
 from app.models.models import CreateUserRequest
 from flask_jwt_extended import JWTManager, create_access_token
+from re import match
 
 bcrypt = Bcrypt()
 jwt = JWTManager()
@@ -17,6 +18,8 @@ def register():
     password = data.get('password')
     if not email:
         return jsonify({"error": "Email is required"}), 400
+    if not match(r'^[\w\. ]+@[\w\. ]+\.\w+$', email):
+        return jsonify({"error": "Enter a valid email address"}), 400
     if not username:
         return jsonify({"error": "Username is required"}), 400
     if not password:
