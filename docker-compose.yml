@@ -1,9 +1,7 @@
-version: "3.9"
-
 services:
   backend:
     build:
-      context: .
+      context: ./backend
       dockerfile: Dockerfile.backend
     container_name: devlog-backend
     ports:
@@ -15,13 +13,13 @@ services:
 
   frontend:
     build:
-      context: .
+      context: ./frontend
       dockerfile: Dockerfile.frontend
+      args:
+        - VITE_API_BASE=${VITE_API_BASE}   # pass only this to build
     container_name: devlog-frontend
     ports:
       - "80:80"
-    environment:
-      - VITE_API_BASE=${VITE_API_BASE}   # frontend gets ONLY this
     networks:
       - devlog-network
 
