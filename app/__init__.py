@@ -9,7 +9,7 @@ from config.config import Config
 
 def create_app(config_class=Config):
     app = Flask(__name__)
-    app.config.from_object(Config)
+    app.config.from_object(config_class)
     CORS(app) # Enable CORS for all routes to resolve cross-origin issues (React and Flask running on different ports)
     db.init_app(app)
     jwt.init_app(app)

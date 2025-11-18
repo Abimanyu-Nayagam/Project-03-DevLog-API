@@ -475,7 +475,9 @@ def filter_snippet_by_tag(tag):
         'id': snippet.id,
         'title': snippet.title,
         'snippet': snippet.code,
+        'language': snippet.language,
         'tags': snippet.tags,
+        'description': snippet.description,
         'created_at': snippet.created_at.isoformat() if snippet.created_at else None,
         'updated_at': snippet.updated_at.isoformat() if snippet.updated_at else None,
     })
@@ -503,6 +505,7 @@ def filter_snippet_by_lang(lang):
         'snippet': snippet.code,
         'language': snippet.language,
         'tags': snippet.tags,
+        'description': snippet.description,
         'created_at': snippet.created_at.isoformat() if snippet.created_at else None,
         'updated_at': snippet.updated_at.isoformat() if snippet.updated_at else None,
     })
@@ -579,8 +582,10 @@ def filter_snippet_by_title(title):
         snippet_data.append({
             'id': snippet.id,
             'title': snippet.title,
-            'code': snippet.code,
+            'snippet': snippet.code,
+            'language': snippet.language,
             'tags': snippet.tags,
+            'description': snippet.description,
         'created_at': snippet.created_at.isoformat() if snippet.created_at else None,
         'updated_at': snippet.updated_at.isoformat() if snippet.updated_at else None,
     })
