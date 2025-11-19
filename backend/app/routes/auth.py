@@ -80,4 +80,4 @@ def login():
             'username': user.username
         }), 200
     else:
-        return jsonify({'message': 'Invalid credentials'}), 401
+        return jsonify({'message': 'Incorrect Password'}), 401
