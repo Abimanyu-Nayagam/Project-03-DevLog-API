@@ -77,7 +77,7 @@ def test_login_missing_username(client):
         "password": "123"
     })
     assert res.status_code == 400
-    assert "Username is required" in res.get_json()["error"]
+    assert "Username or email is required" in res.get_json()["error"]
 
 
 def test_login_missing_password(client):
@@ -88,13 +88,22 @@ def test_login_missing_password(client):
     assert "Password is required" in res.get_json()["error"]
 
 
-def test_login_nonexistent_user(client):
+def test_login_nonexistent_user_with_username(client):
     res = client.post("/login", json={
         "username": "ghost",
         "password": "pass"
     })
     assert res.status_code == 401
-    assert "does not exist" in res.get_json()["error"]
+    assert "Invalid credentials" in res.get_json()["error"]
+
+
+def test_login_nonexistent_user_with_email(client):
+    res = client.post("/login", json={
+        "email": "ghost@example.com",
+        "password": "pass"
+    })
+    assert res.status_code == 401
+    assert "Invalid credentials" in res.get_json()["error"]
 
 
 def test_login_success(client):
@@ -104,9 +113,26 @@ def test_login_success(client):
         "username": "loginuser",
         "password": "mypassword"
     })
-    # Now login
+    # Now login with username
     res = client.post("/login", json={
         "username": "loginuser",
+        "password": "mypassword"
+    })
+    assert res.status_code == 200
+    data = res.get_json()
+    assert "access_token" in data
+
+
+def test_login_success_with_email(client):
+    # First register a user
+    client.post("/register", json={
+        "email": "testlogin2@example.com",
+        "username": "loginuser2",
+        "password": "mypassword"
+    })
+    # Now login with email
+    res = client.post("/login", json={
+        "email": "testlogin2@example.com",
         "password": "mypassword"
     })
     assert res.status_code == 200
