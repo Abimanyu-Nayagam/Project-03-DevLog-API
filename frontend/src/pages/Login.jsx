@@ -16,7 +16,7 @@ export default function Login({ setToken, setUsername }){
   // State variables - these store data that can change
   // When these change, React automatically re-renders the component
   
-  const [username, setUser] = useState('') // Store username input
+  const [usernameOrEmail, setUsernameOrEmail] = useState('') // Store username or email input
   const [password, setPassword] = useState('') // Store password input
   const [msg, setMsg] = useState('') // Store success/error messages
   const navigate = useNavigate() // Hook to navigate to different pages
@@ -27,11 +27,18 @@ export default function Login({ setToken, setUsername }){
     setMsg('') // Clear any previous messages
     
     try{
+      // Determine if input is email or username using regex validation
+      const emailRegex = /^[\w\. ]+@[\w\. ]+\.\w+$/
+      const isEmail = emailRegex.test(usernameOrEmail)
+      const payload = isEmail 
+        ? { email: usernameOrEmail, password }
+        : { username: usernameOrEmail, password }
+      
       // Make HTTP POST request to login endpoint
       const res = await fetch(`${API_BASE}/login`, {
         method: 'POST', // POST method to send data
         headers: {'Content-Type':'application/json'}, // Tell server we're sending JSON
-        body: JSON.stringify({username, password}) // Convert data to JSON string
+        body: JSON.stringify(payload) // Convert data to JSON string
       })
       
       // Parse the response from server as JSON
@@ -61,15 +68,16 @@ export default function Login({ setToken, setUsername }){
       {/* Form - when submitted, calls onSubmit function */}
       <form onSubmit={onSubmit} style={{marginTop:12}}>
         
-        {/* Username input field */}
+        {/* Username or Email input field */}
         <div className="form-row">
-          <label>Username</label>
-          {/* value={username} shows current state */}
+          <label>Username or Email</label>
+          {/* value={usernameOrEmail} shows current state */}
           {/* onChange updates state when user types */}
           <input 
             className="input" 
-            value={username} 
-            onChange={e=>setUser(e.target.value)} 
+            value={usernameOrEmail} 
+            onChange={e=>setUsernameOrEmail(e.target.value)} 
+            placeholder="Enter username or email"
           />
         </div>
         
@@ -82,6 +90,7 @@ export default function Login({ setToken, setUsername }){
             type="password" 
             value={password} 
             onChange={e=>setPassword(e.target.value)} 
+            placeholder='Enter Password'
           />
         </div>
         

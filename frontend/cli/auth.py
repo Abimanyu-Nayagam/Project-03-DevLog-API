@@ -1,6 +1,7 @@
 # auth.py
 
 import requests
+import re
 from utils import TOKEN_FILE, console
 
 def register_user():
@@ -33,14 +34,19 @@ def login_user():
     """Login a user and store JWT token to file."""
     url = "http://localhost:5000/login"
 
-    username = input("Enter username: ")
+    username_or_email = input("Enter username or email: ")
     password = input("Enter password: ")
 
+    # Determine if input is email or username using regex validation
+    email_pattern = r'^[\w\. ]+@[\w\. ]+\.\w+$'
+    is_email = re.match(email_pattern, username_or_email) is not None
+    payload = {
+        "email" if is_email else "username": username_or_email,
+        "password": password
+    }
+
     try:
-        res = requests.post(url, json={
-            "username": username,
-            "password": password
-        })
+        res = requests.post(url, json=payload)
 
         data = res.json()
 

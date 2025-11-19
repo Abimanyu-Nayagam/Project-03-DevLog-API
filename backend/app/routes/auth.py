@@ -51,25 +51,33 @@ def register():
 def login():
     data = request.get_json()
     username = data.get('username')
+    email = data.get('email')
     password = data.get('password')
-    if not username:
-        return jsonify({"error": "Username is required"}), 400
+    
+    # Require either username or email
+    if not username and not email:
+        return jsonify({"error": "Username or email is required"}), 400
+    
     if not password:
         return jsonify({"error": "Password is required"}), 400
 
-    # Find user by username
-    user = User.query.filter_by(username=username).first()
+    # Find user by username or email
+    if username:
+        user = User.query.filter_by(username=username).first()
+    else:
+        user = User.query.filter_by(email=email).first()
+    
     if not user:
-        return jsonify({"error": "User of that username does not exist"}), 401
+        return jsonify({"error": "Invalid credentials"}), 401
 
-    # Verify user exists and password is correct
-    if user and bcrypt.check_password_hash(user.password_hashed, password):
+    # Verify password is correct
+    if bcrypt.check_password_hash(user.password_hashed, password):
         # Create JWT access token
         access_token = create_access_token(identity=str(user.id))
         return jsonify({
-        'message': 'Login successful',
-        'access_token': access_token,
-        'username': user.username
+            'message': 'Login successful',
+            'access_token': access_token,
+            'username': user.username
         }), 200
     else:
-        return jsonify({'message': 'Incorrect password'}), 401
+        return jsonify({'message': 'Invalid credentials'}), 401
