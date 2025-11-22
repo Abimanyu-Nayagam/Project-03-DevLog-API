@@ -8,7 +8,7 @@ bp = Blueprint('routes', __name__)
 
 # Insertion 
 
-@bp.route('/api/v1/snippets', methods=['POST'])
+@bp.route('/api/snippets', methods=['POST'])
 @jwt_required()
 def create_code():
     """Insert a new Code.
@@ -63,7 +63,7 @@ def create_code():
     }), 201
 
 
-@bp.route('/api/v1/entries', methods=['POST'])
+@bp.route('/api/entries', methods=['POST'])
 @jwt_required()
 def create_entry():
     """Insert a new Entry.
@@ -115,7 +115,7 @@ def create_entry():
     }), 201
 
 # Display
-@bp.route('/api/v1/entries', methods=['GET'])
+@bp.route('/api/entries', methods=['GET'])
 @jwt_required()
 def get_entries():
     """Retrieve all entries.
@@ -141,7 +141,7 @@ def get_entries():
 
     return jsonify(entries_list), 200
 
-@bp.route('/api/v1/snippets', methods=['GET'])
+@bp.route('/api/snippets', methods=['GET'])
 @jwt_required()
 def get_snippets():
     """Retrieve all snippets.
@@ -169,7 +169,7 @@ def get_snippets():
 
     return jsonify(snippets_list), 200
 
-@bp.route('/api/v1/entries/<int:id>', methods=['GET'])
+@bp.route('/api/entries/<int:id>', methods=['GET'])
 @jwt_required()
 def get_entry(id):
     """Retrieve an entry by ID.
@@ -195,7 +195,7 @@ def get_entry(id):
 
     return jsonify(entry_data), 200
 
-@bp.route('/api/v1/snippets/<int:id>', methods=['GET'])
+@bp.route('/api/snippets/<int:id>', methods=['GET'])
 @jwt_required()
 def get_snippet(id):
     """Retrieve an snippet by ID.
@@ -223,7 +223,7 @@ def get_snippet(id):
 
     return jsonify(snippet_data), 200
 
-@bp.route('/api/v1/snippets/<int:id>', methods=['DELETE'])
+@bp.route('/api/snippets/<int:id>', methods=['DELETE'])
 @jwt_required()
 def delete_snippet(id):
     """Delete a snippet by ID.
@@ -246,7 +246,7 @@ def delete_snippet(id):
 
     return jsonify({'Success': f'Deleted Snippet -- {id}'}), 200
 
-@bp.route('/api/v1/entries/<int:id>', methods=['DELETE'])
+@bp.route('/api/entries/<int:id>', methods=['DELETE'])
 @jwt_required()
 def delete_entries(id):
     """Delete a entries by ID.
@@ -270,7 +270,7 @@ def delete_entries(id):
     return jsonify({'Success': f'Deleted Entry -- {id}'}), 200
 
 #update exisitng entry
-@bp.route('/api/v1/entries', methods=['PATCH'])
+@bp.route('/api/entries', methods=['PATCH'])
 @jwt_required()
 def update_entry():
     """Update an existing entry by ID."""
@@ -309,7 +309,7 @@ def update_entry():
         return jsonify({'error': 'Database error', 'details': str(exc)}), 500
 
 
-@bp.route('/api/v1/snippets', methods=['PATCH'])
+@bp.route('/api/snippets', methods=['PATCH'])
 @jwt_required()
 def update_snippet():
     """Update an existing snippet by ID."""
@@ -353,7 +353,7 @@ def update_snippet():
 
 
 # search entries 
-@bp.route('/api/v1/entries/search', methods=['GET'])
+@bp.route('/api/entries/search', methods=['GET'])
 @jwt_required()
 def search_entries():
     """fuzzy search entries by title, content, or tags."""
@@ -404,7 +404,7 @@ def search_entries():
     return jsonify(entries_list), 200
 
 
-@bp.route('/api/v1/snippets/search', methods=['GET'])
+@bp.route('/api/snippets/search', methods=['GET'])
 @jwt_required()
 def search_snippets():
     """fuzzy search snippet by title, code, language or tags."""
@@ -456,7 +456,7 @@ def search_snippets():
 
     return jsonify(snippets_list), 200
 
-@bp.route('/api/v1/snippets/filter/tag/<string:tag>', methods=['GET'])
+@bp.route('/api/snippets/filter/tag/<string:tag>', methods=['GET'])
 @jwt_required()
 def filter_snippet_by_tag(tag):
     """Retrieve an snippet by tags.
@@ -484,7 +484,7 @@ def filter_snippet_by_tag(tag):
     
     return jsonify(snippets_data), 200
 
-@bp.route('/api/v1/snippets/filter/language/<string:lang>', methods=['GET'])
+@bp.route('/api/snippets/filter/language/<string:lang>', methods=['GET'])
 @jwt_required()
 def filter_snippet_by_lang(lang):
     """Retrieve an snippet by language.
@@ -512,7 +512,7 @@ def filter_snippet_by_lang(lang):
     
     return jsonify(snippets_data), 200
 
-@bp.route('/api/v1/entries/filter/tag/<string:tag>', methods=['GET'])
+@bp.route('/api/entries/filter/tag/<string:tag>', methods=['GET'])
 @jwt_required()
 def filter_entry_by_tag(tag):
     """Retrieve an entry by tags.
@@ -538,7 +538,7 @@ def filter_entry_by_tag(tag):
 
     return jsonify(entry_data), 200
 
-@bp.route('/api/v1/entries/filter/title/<string:title>', methods=['GET'])
+@bp.route('/api/entries/filter/title/<string:title>', methods=['GET'])
 @jwt_required()
 def filter_entry_by_title(title):
     """Retrieve an entry by title.
@@ -564,7 +564,7 @@ def filter_entry_by_title(title):
 
     return jsonify(entry_data), 200
 
-@bp.route('/api/v1/snippets/filter/title/<string:title>', methods=['GET'])
+@bp.route('/api/snippets/filter/title/<string:title>', methods=['GET'])
 @jwt_required()
 def filter_snippet_by_title(title):
     """Retrieve a snippet by title.

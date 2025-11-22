@@ -6,7 +6,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 
 e_bp = Blueprint('export_route', __name__)
 
-@e_bp.route('/export-entry-md/v1/<int:entry_id>',methods=['GET'])
+@e_bp.route('/export-entry-md/<int:entry_id>',methods=['GET'])
 @jwt_required()
 def export_entry_md(entry_id):
 
@@ -48,7 +48,7 @@ def export_entry_md(entry_id):
         mimetype="text/markdown"
         ), 200
 
-@e_bp.route('/export-snippet-md/v1/<int:snippet_id>',methods=['GET'])
+@e_bp.route('/export-snippet-md/<int:snippet_id>',methods=['GET'])
 @jwt_required()
 def export_snippet_md(snippet_id):
     '''
@@ -88,7 +88,7 @@ def export_snippet_md(snippet_id):
         mimetype="text/markdown"
         ), 200
 
-@e_bp.route('/export-snippet-json/v1/<int:snippet_id>',methods=['GET'])
+@e_bp.route('/export-snippet-json/<int:snippet_id>',methods=['GET'])
 @jwt_required()
 def export_snippet_json(snippet_id):
     '''
@@ -130,7 +130,7 @@ def export_snippet_json(snippet_id):
         mimetype="application/json"
         ), 200
 
-@e_bp.route('/export-entry-json/v1/<int:entry_id>',methods=['GET'])
+@e_bp.route('/export-entry-json/<int:entry_id>',methods=['GET'])
 @jwt_required()
 def export_entry_json(entry_id):
     '''
