@@ -16,7 +16,7 @@ if not api_key:
 genai.configure(api_key=api_key)
 
 # route for handling title auto-generation
-@autogen_bp.route('/autogen/title', methods=['POST'])
+@autogen_bp.route('/api/autogen/title', methods=['POST'])
 @jwt_required()
 def generate_title():
     try: 
@@ -43,7 +43,7 @@ def generate_title():
 
 
 # route for handling description auto-generation
-@autogen_bp.route('/autogen/description', methods=['POST'])
+@autogen_bp.route('/api/autogen/description', methods=['POST'])
 @jwt_required()
 def generate_description():
     try:
@@ -88,7 +88,7 @@ Content:
 
 
 # route for handling tags auto-generation
-@autogen_bp.route('/autogen/tags', methods=['POST'])
+@autogen_bp.route('/api/autogen/tags', methods=['POST'])
 @jwt_required()
 def generate_tags():
     try:
