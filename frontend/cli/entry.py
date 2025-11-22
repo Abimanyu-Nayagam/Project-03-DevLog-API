@@ -12,7 +12,7 @@ def create_entry():
         print("Please login first.")
         return
 
-    url = "http://localhost:5000/api/v1/entries"
+    url = "http://localhost:5000/api/entries"
     headers = {"Authorization": f"Bearer {token}"}
 
     title = input("Enter entry title (leave blank to auto-generate): ").strip()
@@ -73,7 +73,7 @@ def show_entries():
         print("Please login first.")
         return
 
-    url = "http://localhost:5000/api/v1/entries"
+    url = "http://localhost:5000/api/entries"
     headers = {"Authorization": f"Bearer {token}"}
 
     try:
@@ -102,7 +102,7 @@ def show_entry(entry_id):
         print("Please login first.")
         return
 
-    url = f"http://localhost:5000/api/v1/entries/{entry_id}"
+    url = f"http://localhost:5000/api/entries/{entry_id}"
     headers = {"Authorization": f"Bearer {token}"}
 
     try:
@@ -131,7 +131,7 @@ def update_entry(entry_id):
         print("Please login first.")
         return
 
-    fetch_url = f"http://127.0.0.1:5000/api/v1/entries/{entry_id}"
+    fetch_url = f"http://127.0.0.1:5000/api/entries/{entry_id}"
     headers = {"Authorization": f"Bearer {token}"}
 
     try:
@@ -155,7 +155,7 @@ def update_entry(entry_id):
         print(f"Failed to retrieve entry: {e}")
         return
 
-    update_url = f"http://127.0.0.1:5000/api/v1/entries"
+    update_url = f"http://127.0.0.1:5000/api/entries"
 
     print("Update fields (leave blank to keep current, or type 'auto' to auto-generate):\n")
 
@@ -236,7 +236,7 @@ def delete_entry(entry_id):
         print("Please login first.")
         return
 
-    url = f"http://localhost:5000/api/v1/entries/{entry_id}"
+    url = f"http://localhost:5000/api/entries/{entry_id}"
     headers = {"Authorization": f"Bearer {token}"}
 
     try:
@@ -258,7 +258,7 @@ def filter_entries_by_tag(tag):
         print("Please login first.")
         return
 
-    url = f"http://127.0.0.1:5000/api/v1/entries/filter/tag/{tag}"
+    url = f"http://127.0.0.1:5000/api/entries/filter/tag/{tag}"
     headers = {"Authorization": f"Bearer {token}"}
 
     try:
@@ -291,7 +291,7 @@ def filter_entries_by_title(title):
         print("Please login first.")
         return
 
-    url = f"http://127.0.0.1:5000/api/v1/entries/filter/title/{title}"
+    url = f"http://127.0.0.1:5000/api/entries/filter/title/{title}"
     headers = {"Authorization": f"Bearer {token}"}
 
     try:
@@ -324,7 +324,7 @@ def search_entries(query):
         print("Please login first.")
         return
 
-    url = f"http://localhost:5000/api/v1/entries/search?q={query}"
+    url = f"http://localhost:5000/api/entries/search?q={query}"
     headers = {"Authorization": f"Bearer {token}"}
 
     try:

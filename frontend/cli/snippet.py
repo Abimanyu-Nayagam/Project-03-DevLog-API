@@ -14,7 +14,7 @@ def create_snippet():
         print("Please login first.")
         return
 
-    url = "http://localhost:5000/api/v1/snippets"
+    url = "http://localhost:5000/api/snippets"
     headers = {"Authorization": f"Bearer {token}"}
 
     title = input("Enter snippet title (leave blank to auto-generate): ").strip()
@@ -94,7 +94,7 @@ def show_snippets():
         print("Please login first.")
         return
 
-    url = "http://localhost:5000/api/v1/snippets"
+    url = "http://localhost:5000/api/snippets"
     headers = {"Authorization": f"Bearer {token}"}
 
     try:
@@ -131,7 +131,7 @@ def show_snippet(snippet_id):
         print("Please login first.")
         return
 
-    url = f"http://localhost:5000/api/v1/snippets/{snippet_id}"
+    url = f"http://localhost:5000/api/snippets/{snippet_id}"
     headers = {"Authorization": f"Bearer {token}"}
 
     try:
@@ -170,7 +170,7 @@ def update_snippet(snippet_id):
         print("Please login first.")
         return
 
-    fetch_url = f"http://127.0.0.1:5000/api/v1/snippets/{snippet_id}"
+    fetch_url = f"http://127.0.0.1:5000/api/snippets/{snippet_id}"
     headers = {"Authorization": f"Bearer {token}"}
 
     try:
@@ -199,7 +199,7 @@ def update_snippet(snippet_id):
         console.print(f"Failed to retrieve snippet: {e}")
         return
 
-    update_url = f"http://127.0.0.1:5000/api/v1/snippets"
+    update_url = f"http://127.0.0.1:5000/api/snippets"
 
     print("Update fields (leave blank to keep current, or type 'auto' to auto-generate):\n")
 
@@ -308,7 +308,7 @@ def delete_snippet(snippet_id):
         print("Please login first.")
         return
 
-    url = f"http://localhost:5000/api/v1/snippets/{snippet_id}"
+    url = f"http://localhost:5000/api/snippets/{snippet_id}"
     headers = {"Authorization": f"Bearer {token}"}
 
     try:
@@ -328,7 +328,7 @@ def filter_snippets_by_tag(tag):
         print("Please login first.")
         return
 
-    url = f"http://127.0.0.1:5000/api/v1/snippets/filter/tag/{tag}"
+    url = f"http://127.0.0.1:5000/api/snippets/filter/tag/{tag}"
     headers = {"Authorization": f"Bearer {token}"}
 
     try:
@@ -363,7 +363,7 @@ def filter_snippets_by_title(title):
         print("Please login first.")
         return
 
-    url = f"http://127.0.0.1:5000/api/v1/snippets/filter/title/{title}"
+    url = f"http://127.0.0.1:5000/api/snippets/filter/title/{title}"
     headers = {"Authorization": f"Bearer {token}"}
 
     try:
@@ -398,7 +398,7 @@ def filter_snippets_by_lang(language):
         print("Please login first.")
         return
 
-    url = f"http://127.0.0.1:5000/api/v1/snippets/filter/language/{language}"
+    url = f"http://127.0.0.1:5000/api/snippets/filter/language/{language}"
     headers = {"Authorization": f"Bearer {token}"}
 
     try:
@@ -433,7 +433,7 @@ def search_snippets(query):
         print("Please login first.")
         return
 
-    url = f"http://localhost:5000/api/v1/snippets/search?q={query}"
+    url = f"http://localhost:5000/api/snippets/search?q={query}"
     headers = {"Authorization": f"Bearer {token}"}
 
     try:
