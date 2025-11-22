@@ -6,7 +6,7 @@ from app.models.db_models import User, db
 # -----------------------
 
 def test_register_missing_email(client):
-    res = client.post("/register", json={
+    res = client.post("/api/register", json={
         "username": "abc",
         "password": "123"
     })
@@ -15,7 +15,7 @@ def test_register_missing_email(client):
 
 
 def test_register_missing_username(client):
-    res = client.post("/register", json={
+    res = client.post("/api/register", json={
         "email": "test@example.com",
         "password": "123"
     })
@@ -24,7 +24,7 @@ def test_register_missing_username(client):
 
 
 def test_register_missing_password(client):
-    res = client.post("/register", json={
+    res = client.post("/api/register", json={
         "email": "test@example.com",
         "username": "abc",
     })
@@ -33,7 +33,7 @@ def test_register_missing_password(client):
 
 
 def test_register_success(client):
-    res = client.post("/register", json={
+    res = client.post("/api/register", json={
         "email": "test@example.com",
         "username": "abc",
         "password": "1234"
@@ -51,14 +51,14 @@ def test_register_success(client):
 
 
 def test_register_duplicate_user(client):
-    client.post("/register", json={
+    client.post("/api/register", json={
         "email": "dup@example.com",
         "username": "duplicate",
         "password": "pass"
     })
 
     # try again → should fail
-    res = client.post("/register", json={
+    res = client.post("/api/register", json={
         "email": "dup@example.com",
         "username": "duplicate",
         "password": "pass"
@@ -73,7 +73,7 @@ def test_register_duplicate_user(client):
 # -----------------------
 
 def test_login_missing_username(client):
-    res = client.post("/login", json={
+    res = client.post("/api/login", json={
         "password": "123"
     })
     assert res.status_code == 400
@@ -81,7 +81,7 @@ def test_login_missing_username(client):
 
 
 def test_login_missing_password(client):
-    res = client.post("/login", json={
+    res = client.post("/api/login", json={
         "username": "abc"
     })
     assert res.status_code == 400
@@ -89,7 +89,7 @@ def test_login_missing_password(client):
 
 
 def test_login_nonexistent_user_with_username(client):
-    res = client.post("/login", json={
+    res = client.post("/api/login", json={
         "username": "ghost",
         "password": "pass"
     })
@@ -98,7 +98,7 @@ def test_login_nonexistent_user_with_username(client):
 
 
 def test_login_nonexistent_user_with_email(client):
-    res = client.post("/login", json={
+    res = client.post("/api/login", json={
         "email": "ghost@example.com",
         "password": "pass"
     })
@@ -108,13 +108,13 @@ def test_login_nonexistent_user_with_email(client):
 
 def test_login_success(client):
     # First register a user
-    client.post("/register", json={
+    client.post("/api/register", json={
         "email": "testlogin@example.com",
         "username": "loginuser",
         "password": "mypassword"
     })
     # Now login with username
-    res = client.post("/login", json={
+    res = client.post("/api/login", json={
         "username": "loginuser",
         "password": "mypassword"
     })
@@ -125,13 +125,13 @@ def test_login_success(client):
 
 def test_login_success_with_email(client):
     # First register a user
-    client.post("/register", json={
+    client.post("/api/register", json={
         "email": "testlogin2@example.com",
         "username": "loginuser2",
         "password": "mypassword"
     })
     # Now login with email
-    res = client.post("/login", json={
+    res = client.post("/api/login", json={
         "email": "testlogin2@example.com",
         "password": "mypassword"
     })

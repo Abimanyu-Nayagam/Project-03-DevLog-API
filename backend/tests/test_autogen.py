@@ -3,9 +3,9 @@ import pytest
 from unittest.mock import patch
 
 @pytest.mark.parametrize("route, key", [
-    ("/autogen/title", "title"),
-    ("/autogen/description", "description"),
-    ("/autogen/tags", "tags")
+    ("/api/autogen/title", "title"),
+    ("/api/autogen/description", "description"),
+    ("/api/autogen/tags", "tags")
 ])
 def test_autogen_routes(auth_client, route, key):
     """

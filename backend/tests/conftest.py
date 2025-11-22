@@ -24,14 +24,14 @@ def auth_client(test_app):
     client = test_app.test_client()
 
     # Register a user
-    client.post("/register", json={
+    client.post("/api/register", json={
         "email": "testauth@example.com",
         "username": "authuser",
         "password": "password123"
     })
 
     # Login to get access token
-    res = client.post("/login", json={
+    res = client.post("/api/login", json={
         "username": "authuser",
         "password": "password123"
     })
