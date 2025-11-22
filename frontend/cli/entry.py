@@ -12,7 +12,7 @@ def create_entry():
         print("Please login first.")
         return
 
-    url = "http://localhost:5000/api/v1/entries"
+    url = "http://localhost:5000/api/entries"
     headers = {"Authorization": f"Bearer {token}"}
 
     title = input("Enter entry title (leave blank to auto-generate): ").strip()
@@ -32,7 +32,7 @@ def create_entry():
     # Auto-generation
     try:
         if not title:
-            resp = requests.post("http://localhost:5000/autogen/title", json={"content": content}, headers=headers)
+            resp = requests.post("http://localhost:5000/api/autogen/title", json={"content": content}, headers=headers)
             if resp.ok:
                 title = resp.json().get("title") or title
                 if title:
@@ -42,7 +42,7 @@ def create_entry():
             payload = {"content": content, "language": "markdown"}
             if title:
                 payload["title"] = title
-            resp = requests.post("http://localhost:5000/autogen/tags", json=payload, headers=headers)
+            resp = requests.post("http://localhost:5000/api/autogen/tags", json=payload, headers=headers)
             if resp.ok:
                 tags = resp.json().get("tags") or tags
                 if tags:
@@ -73,7 +73,7 @@ def show_entries():
         print("Please login first.")
         return
 
-    url = "http://localhost:5000/api/v1/entries"
+    url = "http://localhost:5000/api/entries"
     headers = {"Authorization": f"Bearer {token}"}
 
     try:
@@ -102,7 +102,7 @@ def show_entry(entry_id):
         print("Please login first.")
         return
 
-    url = f"http://localhost:5000/api/v1/entries/{entry_id}"
+    url = f"http://localhost:5000/api/entries/{entry_id}"
     headers = {"Authorization": f"Bearer {token}"}
 
     try:
@@ -131,7 +131,7 @@ def update_entry(entry_id):
         print("Please login first.")
         return
 
-    fetch_url = f"http://127.0.0.1:5000/api/v1/entries/{entry_id}"
+    fetch_url = f"http://127.0.0.1:5000/api/entries/{entry_id}"
     headers = {"Authorization": f"Bearer {token}"}
 
     try:
@@ -155,7 +155,7 @@ def update_entry(entry_id):
         print(f"Failed to retrieve entry: {e}")
         return
 
-    update_url = f"http://127.0.0.1:5000/api/v1/entries"
+    update_url = f"http://127.0.0.1:5000/api/entries"
 
     print("Update fields (leave blank to keep current, or type 'auto' to auto-generate):\n")
 
@@ -180,7 +180,7 @@ def update_entry(entry_id):
         if title == 'auto' or (not title and not entry.get('title')):
             yn = input("\nAuto-generate title? [y/N]: ").strip().lower()
             if yn == 'y':
-                resp = requests.post("http://localhost:5000/autogen/title",
+                resp = requests.post("http://localhost:5000/api/autogen/title",
                                      json={"content": content_for_gen},
                                      headers=headers)
                 if resp.ok:
@@ -194,7 +194,7 @@ def update_entry(entry_id):
                 payload = {"content": content_for_gen, "language": "markdown"}
                 if title_for_gen:
                     payload["title"] = title_for_gen
-                resp = requests.post("http://localhost:5000/autogen/tags",
+                resp = requests.post("http://localhost:5000/api/autogen/tags",
                                      json=payload,
                                      headers=headers)
                 if resp.ok:
@@ -236,7 +236,7 @@ def delete_entry(entry_id):
         print("Please login first.")
         return
 
-    url = f"http://localhost:5000/api/v1/entries/{entry_id}"
+    url = f"http://localhost:5000/api/entries/{entry_id}"
     headers = {"Authorization": f"Bearer {token}"}
 
     try:
@@ -258,7 +258,7 @@ def filter_entries_by_tag(tag):
         print("Please login first.")
         return
 
-    url = f"http://127.0.0.1:5000/api/v1/entries/filter/tag/{tag}"
+    url = f"http://127.0.0.1:5000/api/entries/filter/tag/{tag}"
     headers = {"Authorization": f"Bearer {token}"}
 
     try:
@@ -291,7 +291,7 @@ def filter_entries_by_title(title):
         print("Please login first.")
         return
 
-    url = f"http://127.0.0.1:5000/api/v1/entries/filter/title/{title}"
+    url = f"http://127.0.0.1:5000/api/entries/filter/title/{title}"
     headers = {"Authorization": f"Bearer {token}"}
 
     try:
@@ -324,7 +324,7 @@ def search_entries(query):
         print("Please login first.")
         return
 
-    url = f"http://localhost:5000/api/v1/entries/search?q={query}"
+    url = f"http://localhost:5000/api/entries/search?q={query}"
     headers = {"Authorization": f"Bearer {token}"}
 
     try:

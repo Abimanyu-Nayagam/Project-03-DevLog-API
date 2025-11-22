@@ -98,7 +98,7 @@ export default function Snippets({ apiHeaders, token }) {
     
     try {
       // Call backend autogen endpoint (to be implemented by other developer)
-      const res = await fetch(`${API_BASE}/autogen/title`, {
+      const res = await fetch(`${API_BASE}/api/autogen/title`, {
         method: 'POST',
         headers: apiHeaders(),
         body: JSON.stringify({ content: code, language })
@@ -130,7 +130,7 @@ export default function Snippets({ apiHeaders, token }) {
     
     try {
       // Call backend autogen endpoint (to be implemented by other developer)
-      const res = await fetch(`${API_BASE}/autogen/description`, {
+      const res = await fetch(`${API_BASE}/api/autogen/description`, {
         method: 'POST',
         headers: apiHeaders(),
         body: JSON.stringify({ content: code, language })
@@ -162,7 +162,7 @@ export default function Snippets({ apiHeaders, token }) {
     
     try {
       // Call backend autogen endpoint (to be implemented by other developer)
-      const res = await fetch(`${API_BASE}/autogen/tags`, {
+      const res = await fetch(`${API_BASE}/api/autogen/tags`, {
         method: 'POST',
         headers: apiHeaders(),
         body: JSON.stringify({ content: code, language })
@@ -201,7 +201,7 @@ export default function Snippets({ apiHeaders, token }) {
     setMessage('') // Clear any previous messages
     try {
       // Make GET request to fetch snippets
-      const res = await fetch(`${API_BASE}/api/v1/snippets`, {
+      const res = await fetch(`${API_BASE}/api/snippets`, {
         headers: apiHeaders() // Include authentication token in headers
       })
       
@@ -244,7 +244,7 @@ export default function Snippets({ apiHeaders, token }) {
 
     try {
       // Send POST request to create new snippet
-      const res = await fetch(`${API_BASE}/api/v1/snippets`, {
+      const res = await fetch(`${API_BASE}/api/snippets`, {
         method: 'POST', // POST = create new resource
         headers: apiHeaders(), // Include authentication token
         // IMPORTANT: Backend expects "snippet" field, not "code"
@@ -289,7 +289,7 @@ export default function Snippets({ apiHeaders, token }) {
 
     try {
       // Send PATCH request to update snippet
-      const res = await fetch(`${API_BASE}/api/v1/snippets`, {
+      const res = await fetch(`${API_BASE}/api/snippets`, {
         method: 'PATCH', // PATCH = update existing resource
         headers: apiHeaders(), // Auth token
         // IMPORTANT: Backend expects "snippet" field, not "code"
@@ -330,7 +330,7 @@ export default function Snippets({ apiHeaders, token }) {
     setMessage('') // Clear messages
     try {
       // Send DELETE request with snippet ID in URL
-      const res = await fetch(`${API_BASE}/api/v1/snippets/${id}`, {
+      const res = await fetch(`${API_BASE}/api/snippets/${id}`, {
         method: 'DELETE', // DELETE = remove resource
         headers: apiHeaders() // Auth token
       })
@@ -391,7 +391,7 @@ export default function Snippets({ apiHeaders, token }) {
     setMessage('') // Clear messages
     try {
       // Send GET request with search query in URL
-      const res = await fetch(`${API_BASE}/api/v1/snippets/search?q=${searchTerm}`, {
+      const res = await fetch(`${API_BASE}/api/snippets/search?q=${searchTerm}`, {
         headers: apiHeaders() // Auth token
       })
       const data = await res.json()
@@ -425,11 +425,11 @@ export default function Snippets({ apiHeaders, token }) {
     try {
       let url = '' // Build URL based on filter type
       if (filterType === 'language') {
-        // Filter by programming language: /api/v1/snippets/filter/language/{lang}
-        url = `${API_BASE}/api/v1/snippets/filter/language/${searchTerm}`
+        // Filter by programming language: /api/snippets/filter/language/{lang}
+        url = `${API_BASE}/api/snippets/filter/language/${searchTerm}`
       } else if (filterType === 'tag') {
-        // Filter by tag: /api/v1/snippets/filter/tag/{tagname}
-        url = `${API_BASE}/api/v1/snippets/filter/tag/${searchTerm}`
+        // Filter by tag: /api/snippets/filter/tag/{tagname}
+        url = `${API_BASE}/api/snippets/filter/tag/${searchTerm}`
       } else {
         // If 'all' selected, just do regular search
         searchSnippets()
@@ -461,7 +461,7 @@ export default function Snippets({ apiHeaders, token }) {
   async function exportMarkdown(id) {
     // Fetch file with auth headers, then download as blob
     try {
-      const res = await fetch(`${API_BASE}/export-snippet-md/v1/${id}`, {
+      const res = await fetch(`${API_BASE}/api/export-snippet-md/${id}`, {
         headers: apiHeaders() // Include auth token
       })
       if (res.ok) {
@@ -484,7 +484,7 @@ export default function Snippets({ apiHeaders, token }) {
   async function exportJSON(id) {
     // Fetch file with auth headers, then download as blob
     try {
-      const res = await fetch(`${API_BASE}/export-snippet-json/v1/${id}`, {
+      const res = await fetch(`${API_BASE}/api/export-snippet-json/${id}`, {
         headers: apiHeaders() // Include auth token
       })
       if (res.ok) {

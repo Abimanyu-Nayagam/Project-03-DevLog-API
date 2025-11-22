@@ -13,7 +13,7 @@ A RESTful API for managing developer journal entries and code snippets. Built wi
 - Modeled `Entry`, `Snippet`, and `User` using **SQLAlchemy** with efficient indexing.
 - Added **CLI functionality** to export entries/snippets to **Markdown** or **JSON** files.
 - Built a **CLI interface** to interact with all API routes.
-- Designed **versioned API endpoints** (e.g., `/api/v1/entries`) for future compatibility.
+- Designed **versioned API endpoints** (e.g., `/api/entries`) for future compatibility.
 - Configured **AWS RDS** to host and manage the relational database.
 - **Containerized** the application using Docker for consistent cross-environment behavior.
 - Implemented a **CI/CD pipeline** using GitHub Actions for automated build and testing.
@@ -135,18 +135,18 @@ After cloning
 ## API Endpoints
 
 - Entries
-  - `GET  /api/v1/entries` — list entries
-  - `GET  /api/v1/entries/<id>` — get entry by id
-  - `POST /api/v1/entries` — create entry
-  - `PATCH /api/v1/entries/<id>` — update entry
-  - `DELETE /api/v1/entries/<id>` — delete entry
+  - `GET  /api/entries` — list entries
+  - `GET  /api/entries/<id>` — get entry by id
+  - `POST /api/entries` — create entry
+  - `PATCH /api/entries/<id>` — update entry
+  - `DELETE /api/entries/<id>` — delete entry
 
 - Snippets
-  - `GET  /api/v1/snippets` — list snippets
-  - `GET  /api/v1/snippets/<id>` — get snippet by id
-  - `POST /api/v1/snippets` — create snippet
-  - `PATCH /api/v1/snippets/<id>` — update snippet
-  - `DELETE /api/v1/snippets/<id>` — delete snippet
+  - `GET  /api/snippets` — list snippets
+  - `GET  /api/snippets/<id>` — get snippet by id
+  - `POST /api/snippets` — create snippet
+  - `PATCH /api/snippets/<id>` — update snippet
+  - `DELETE /api/snippets/<id>` — delete snippet
 
 ### Authentication
 
@@ -155,26 +155,26 @@ After cloning
 
 ### Entries
 
-- `GET  /api/v1/entries` — list entries for the authenticated user
-- `GET  /api/v1/entries/<id>` — get entry by id
-- `POST /api/v1/entries` — create entry 
-- `PATCH /api/v1/entries` — update entry 
-- `DELETE /api/v1/entries/<id>` — delete entry
-- `GET /api/v1/entries/search?q=<query>` — fuzzy search entries 
-- `GET /api/v1/entries/filter/tag/<tag>` — filter entries by tag
-- `GET /api/v1/entries/filter/title/<title>` — filter entries by title
+- `GET  /api/entries` — list entries for the authenticated user
+- `GET  /api/entries/<id>` — get entry by id
+- `POST /api/entries` — create entry 
+- `PATCH /api/entries` — update entry 
+- `DELETE /api/entries/<id>` — delete entry
+- `GET /api/entries/search?q=<query>` — fuzzy search entries 
+- `GET /api/entries/filter/tag/<tag>` — filter entries by tag
+- `GET /api/entries/filter/title/<title>` — filter entries by title
 
 ### Snippets
 
-- `GET  /api/v1/snippets` — list snippets for the authenticated user
-- `GET  /api/v1/snippets/<id>` — get snippet by id
-- `POST /api/v1/snippets` — create snippet
-- `PATCH /api/v1/snippets` — update snippet 
-- `DELETE /api/v1/snippets/<id>` — delete snippet
-- `GET /api/v1/snippets/search?q=<query>` — fuzzy search snippets 
-- `GET /api/v1/snippets/filter/tag/<tag>` — filter snippets by tag
-- `GET /api/v1/snippets/filter/language/<language>` — filter snippets by language
-- `GET /api/v1/snippets/filter/title/<title>` — filter snippets by title
+- `GET  /api/snippets` — list snippets for the authenticated user
+- `GET  /api/snippets/<id>` — get snippet by id
+- `POST /api/snippets` — create snippet
+- `PATCH /api/snippets` — update snippet 
+- `DELETE /api/snippets/<id>` — delete snippet
+- `GET /api/snippets/search?q=<query>` — fuzzy search snippets 
+- `GET /api/snippets/filter/tag/<tag>` — filter snippets by tag
+- `GET /api/snippets/filter/language/<language>` — filter snippets by language
+- `GET /api/snippets/filter/title/<title>` — filter snippets by title
 
 ### Auto-generation (LLM-powered)
 
@@ -184,10 +184,10 @@ After cloning
 
 ### Export endpoints
 
-- `GET  /export-entry-md/v1/<entry_id>` — download a Markdown file for an entry
-- `GET  /export-snippet-md/v1/<snippet_id>` — download a Markdown file for a snippet (includes fenced code block)
-- `GET  /export-snippet-json/v1/<snippet_id>` — download snippet as JSON
-- `GET  /export-entry-json/v1/<entry_id>` — download entry as JSON
+- `GET  /export-entry-md/<entry_id>` — download a Markdown file for an entry
+- `GET  /export-snippet-md/<snippet_id>` — download a Markdown file for a snippet (includes fenced code block)
+- `GET  /export-snippet-json/<snippet_id>` — download snippet as JSON
+- `GET  /export-entry-json/<entry_id>` — download entry as JSON
 
 Refer to the route handlers in `app/routes/` (`route.py`, `auth.py`, `autogen_route.py`, `export_route.py`) for parameter names, example payloads, and exact response shapes.
 

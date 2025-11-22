@@ -12,7 +12,7 @@ def download_snippet_md():
         return
 
     snippet_id = int(input("Enter id of the snippet to download: "))
-    url = f"http://127.0.0.1:5000/export-snippet-md/v1/{snippet_id}"
+    url = f"http://127.0.0.1:5000/api/export-snippet-md/{snippet_id}"
     headers = {"Authorization": f"Bearer {token}"}
 
     try:
@@ -32,7 +32,7 @@ def download_snippet_json():
         return
 
     snippet_id = int(input("Enter id of the snippet to download: "))
-    url = f"http://127.0.0.1:5000/export-snippet-json/v1/{snippet_id}"
+    url = f"http://127.0.0.1:5000/api/export-snippet-json/{snippet_id}"
     headers = {"Authorization": f"Bearer {token}"}
 
     try:
@@ -52,7 +52,7 @@ def download_entry_md():
         return
 
     entry_id = int(input("Enter id of the entry to download: "))
-    url = f"http://127.0.0.1:5000/export-entry-md/v1/{entry_id}"
+    url = f"http://127.0.0.1:5000/api/export-entry-md/{entry_id}"
     headers = {"Authorization": f"Bearer {token}"}
 
     try:
@@ -72,7 +72,7 @@ def download_entry_json():
         return
 
     entry_id = int(input("Enter id of the entry to download: "))
-    url = f"http://127.0.0.1:5000/export-entry-json/v1/{entry_id}"
+    url = f"http://127.0.0.1:5000/api/export-entry-json/{entry_id}"
     headers = {"Authorization": f"Bearer {token}"}
 
     try:

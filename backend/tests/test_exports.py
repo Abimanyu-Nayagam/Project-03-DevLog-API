@@ -5,14 +5,14 @@ from io import BytesIO
 # Helpers
 def register_and_login(client):
     # Register
-    client.post("/register", json={
+    client.post("/api/register", json={
         "username": "testuser",
         "email": "test@example.com",
         "password": "password123"
     })
 
     # Login
-    login_res = client.post("/login", json={
+    login_res = client.post("/api/login", json={
         "username": "testuser",
         "password": "password123"
     })
@@ -22,7 +22,7 @@ def register_and_login(client):
 
 
 def create_entry(client, headers):
-    res = client.post("/api/v1/entries", json={
+    res = client.post("/api/entries", json={
         "title": "My Entry",
         "content": "This is a test entry",
         "tags": "test"
@@ -33,7 +33,7 @@ def create_entry(client, headers):
 
 
 def create_snippet(client, headers):
-    res = client.post("/api/v1/snippets", json={
+    res = client.post("/api/snippets", json={
         "title": "Snippet One",
         "snippet": "print('hello')",
         "language": "python",
@@ -52,7 +52,7 @@ def test_export_entry_md(client):
     headers = register_and_login(client)
     entry_id = create_entry(client, headers)
 
-    res = client.get(f"/export-entry-md/v1/{entry_id}", headers=headers)
+    res = client.get(f"/api/export-entry-md/{entry_id}", headers=headers)
     assert res.status_code == 200
     assert res.mimetype == "text/markdown"
 
@@ -64,7 +64,7 @@ def test_export_snippet_md(client):
     headers = register_and_login(client)
     snippet_id = create_snippet(client, headers)
 
-    res = client.get(f"/export-snippet-md/v1/{snippet_id}", headers=headers)
+    res = client.get(f"/api/export-snippet-md/{snippet_id}", headers=headers)
     assert res.status_code == 200
     assert res.mimetype == "text/markdown"
 
@@ -76,7 +76,7 @@ def test_export_snippet_json(client):
     headers = register_and_login(client)
     snippet_id = create_snippet(client, headers)
 
-    res = client.get(f"/export-snippet-json/v1/{snippet_id}", headers=headers)
+    res = client.get(f"/api/export-snippet-json/{snippet_id}", headers=headers)
     assert res.status_code == 200
     assert res.mimetype == "application/json"
 
@@ -88,6 +88,6 @@ def test_export_entry_json(client):
     headers = register_and_login(client)
     entry_id = create_entry(client, headers)
 
-    res = client.get(f"/export-entry-json/v1/{entry_id}", headers=headers)
+    res = client.get(f"/api/export-entry-json/{entry_id}", headers=headers)
     assert res.status_code == 200
     assert res.mimetype == "application/json"

@@ -26,7 +26,7 @@ export default function Register(){
     
     try{
       // Send POST request to register endpoint
-      const res = await fetch(`${API_BASE}/register`, {
+      const res = await fetch(`${API_BASE}/api/register`, {
         method:'POST', // POST method sends data to server
         headers: {'Content-Type':'application/json'}, // Tell server we're sending JSON
         body: JSON.stringify({email, username, password}) // Convert form data to JSON

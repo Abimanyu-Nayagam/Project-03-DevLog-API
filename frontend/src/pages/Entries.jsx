@@ -93,7 +93,7 @@ export default function Entries({ apiHeaders, token }) {
     
     try {
       // Call backend autogen endpoint (to be implemented by other developer)
-      const res = await fetch(`${API_BASE}/autogen/title`, {
+      const res = await fetch(`${API_BASE}/api/autogen/title`, {
         method: 'POST',
         headers: apiHeaders(),
         body: JSON.stringify({ content })
@@ -125,7 +125,7 @@ export default function Entries({ apiHeaders, token }) {
     
     try {
       // Call backend autogen endpoint (to be implemented by other developer)
-      const res = await fetch(`${API_BASE}/autogen/tags`, {
+      const res = await fetch(`${API_BASE}/api/autogen/tags`, {
         method: 'POST',
         headers: apiHeaders(),
         body: JSON.stringify({ content })
@@ -165,7 +165,7 @@ export default function Entries({ apiHeaders, token }) {
     
     try {
       // Make GET request to fetch entries
-      const res = await fetch(`${API_BASE}/api/v1/entries`, {
+      const res = await fetch(`${API_BASE}/api/entries`, {
         headers: apiHeaders() // Include authentication token in headers
       })
       
@@ -206,7 +206,7 @@ export default function Entries({ apiHeaders, token }) {
 
     try {
       // Send POST request to create new entry
-      const res = await fetch(`${API_BASE}/api/v1/entries`, {
+      const res = await fetch(`${API_BASE}/api/entries`, {
         method: 'POST', // POST = create new resource
         headers: apiHeaders(), // Include authentication token
         body: JSON.stringify({ title, content, tags }) // Convert data to JSON string
@@ -248,7 +248,7 @@ export default function Entries({ apiHeaders, token }) {
 
     try {
       // Send PATCH request to update entry
-      const res = await fetch(`${API_BASE}/api/v1/entries`, {
+      const res = await fetch(`${API_BASE}/api/entries`, {
         method: 'PATCH', // PATCH = update existing resource
         headers: apiHeaders(), // Auth token
         body: JSON.stringify({ id: editId, title, content, tags }) // Include entry ID
@@ -284,7 +284,7 @@ export default function Entries({ apiHeaders, token }) {
     setMessage('') // Clear messages
     try {
       // Send DELETE request with entry ID in URL
-      const res = await fetch(`${API_BASE}/api/v1/entries/${id}`, {
+      const res = await fetch(`${API_BASE}/api/entries/${id}`, {
         method: 'DELETE', // DELETE = remove resource
         headers: apiHeaders() // Auth token
       })
@@ -340,7 +340,7 @@ export default function Entries({ apiHeaders, token }) {
     setMessage('') // Clear messages
     try {
       // Send GET request with search query in URL
-      const res = await fetch(`${API_BASE}/api/v1/entries/search?q=${searchTerm}`, {
+      const res = await fetch(`${API_BASE}/api/entries/search?q=${searchTerm}`, {
         headers: apiHeaders() // Auth token
       })
       const data = await res.json()
@@ -377,11 +377,11 @@ export default function Entries({ apiHeaders, token }) {
     try {
       let url = '' // Build URL based on filter type
       if (filterType === 'tag') {
-        // Filter by tag: /api/v1/entries/filter/tag/{tagname}
-        url = `${API_BASE}/api/v1/entries/filter/tag/${searchTerm}`
+        // Filter by tag: /api/entries/filter/tag/{tagname}
+        url = `${API_BASE}/api/entries/filter/tag/${searchTerm}`
       } else if (filterType === 'title') {
-        // Filter by title: /api/v1/entries/filter/title/{titletext}
-        url = `${API_BASE}/api/v1/entries/filter/title/${searchTerm}`
+        // Filter by title: /api/entries/filter/title/{titletext}
+        url = `${API_BASE}/api/entries/filter/title/${searchTerm}`
       } else {
         // If 'all' selected, just do regular search
         searchEntries()
@@ -416,7 +416,7 @@ export default function Entries({ apiHeaders, token }) {
   async function exportMarkdown(id) {
     // Fetch file with auth headers, then download as blob
     try {
-      const res = await fetch(`${API_BASE}/export-entry-md/v1/${id}`, {
+      const res = await fetch(`${API_BASE}/api/export-entry-md/${id}`, {
         headers: apiHeaders() // Include auth token
       })
       if (res.ok) {
@@ -439,7 +439,7 @@ export default function Entries({ apiHeaders, token }) {
   async function exportJSON(id) {
     // Fetch file with auth headers, then download as blob
     try {
-      const res = await fetch(`${API_BASE}/export-entry-json/v1/${id}`, {
+      const res = await fetch(`${API_BASE}/api/export-entry-json/${id}`, {
         headers: apiHeaders() // Include auth token
       })
       if (res.ok) {

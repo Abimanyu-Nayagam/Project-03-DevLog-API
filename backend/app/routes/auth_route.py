@@ -10,7 +10,7 @@ jwt = JWTManager()
 
 auth_bp = Blueprint('auth', __name__)
 
-@auth_bp.route('/register', methods=['POST'])
+@auth_bp.route('/api/register', methods=['POST'])
 def register():
     data = request.get_json()
     email = data.get('email')
@@ -47,7 +47,7 @@ def register():
 
     return jsonify({"message": f"User {username} registered successfully!"}), 201
 
-@auth_bp.route('/login', methods=['POST'])
+@auth_bp.route('/api/login', methods=['POST'])
 def login():
     data = request.get_json()
     username = data.get('username')
