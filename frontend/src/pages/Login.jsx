@@ -35,7 +35,7 @@ export default function Login({ setToken, setUsername }){
         : { username: usernameOrEmail, password }
       
       // Make HTTP POST request to login endpoint
-      const res = await fetch(`${API_BASE}/login`, {
+      const res = await fetch(`${API_BASE}/api/login`, {
         method: 'POST', // POST method to send data
         headers: {'Content-Type':'application/json'}, // Tell server we're sending JSON
         body: JSON.stringify(payload) // Convert data to JSON string

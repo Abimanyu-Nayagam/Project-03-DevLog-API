@@ -32,7 +32,7 @@ def create_entry():
     # Auto-generation
     try:
         if not title:
-            resp = requests.post("http://localhost:5000/autogen/title", json={"content": content}, headers=headers)
+            resp = requests.post("http://localhost:5000/api/autogen/title", json={"content": content}, headers=headers)
             if resp.ok:
                 title = resp.json().get("title") or title
                 if title:
@@ -42,7 +42,7 @@ def create_entry():
             payload = {"content": content, "language": "markdown"}
             if title:
                 payload["title"] = title
-            resp = requests.post("http://localhost:5000/autogen/tags", json=payload, headers=headers)
+            resp = requests.post("http://localhost:5000/api/autogen/tags", json=payload, headers=headers)
             if resp.ok:
                 tags = resp.json().get("tags") or tags
                 if tags:
@@ -180,7 +180,7 @@ def update_entry(entry_id):
         if title == 'auto' or (not title and not entry.get('title')):
             yn = input("\nAuto-generate title? [y/N]: ").strip().lower()
             if yn == 'y':
-                resp = requests.post("http://localhost:5000/autogen/title",
+                resp = requests.post("http://localhost:5000/api/autogen/title",
                                      json={"content": content_for_gen},
                                      headers=headers)
                 if resp.ok:
@@ -194,7 +194,7 @@ def update_entry(entry_id):
                 payload = {"content": content_for_gen, "language": "markdown"}
                 if title_for_gen:
                     payload["title"] = title_for_gen
-                resp = requests.post("http://localhost:5000/autogen/tags",
+                resp = requests.post("http://localhost:5000/api/autogen/tags",
                                      json=payload,
                                      headers=headers)
                 if resp.ok:

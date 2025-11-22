@@ -98,7 +98,7 @@ export default function Snippets({ apiHeaders, token }) {
     
     try {
       // Call backend autogen endpoint (to be implemented by other developer)
-      const res = await fetch(`${API_BASE}/autogen/title`, {
+      const res = await fetch(`${API_BASE}/api/autogen/title`, {
         method: 'POST',
         headers: apiHeaders(),
         body: JSON.stringify({ content: code, language })
@@ -130,7 +130,7 @@ export default function Snippets({ apiHeaders, token }) {
     
     try {
       // Call backend autogen endpoint (to be implemented by other developer)
-      const res = await fetch(`${API_BASE}/autogen/description`, {
+      const res = await fetch(`${API_BASE}/api/autogen/description`, {
         method: 'POST',
         headers: apiHeaders(),
         body: JSON.stringify({ content: code, language })
@@ -162,7 +162,7 @@ export default function Snippets({ apiHeaders, token }) {
     
     try {
       // Call backend autogen endpoint (to be implemented by other developer)
-      const res = await fetch(`${API_BASE}/autogen/tags`, {
+      const res = await fetch(`${API_BASE}/api/autogen/tags`, {
         method: 'POST',
         headers: apiHeaders(),
         body: JSON.stringify({ content: code, language })
@@ -461,7 +461,7 @@ export default function Snippets({ apiHeaders, token }) {
   async function exportMarkdown(id) {
     // Fetch file with auth headers, then download as blob
     try {
-      const res = await fetch(`${API_BASE}/export-snippet-md/v1/${id}`, {
+      const res = await fetch(`${API_BASE}/api/export-snippet-md/v1/${id}`, {
         headers: apiHeaders() // Include auth token
       })
       if (res.ok) {
@@ -484,7 +484,7 @@ export default function Snippets({ apiHeaders, token }) {
   async function exportJSON(id) {
     // Fetch file with auth headers, then download as blob
     try {
-      const res = await fetch(`${API_BASE}/export-snippet-json/v1/${id}`, {
+      const res = await fetch(`${API_BASE}/api/export-snippet-json/v1/${id}`, {
         headers: apiHeaders() // Include auth token
       })
       if (res.ok) {

@@ -36,7 +36,7 @@ def create_snippet():
     # Auto-generate fields as requested
     try:
         if not title:
-            resp = requests.post("http://localhost:5000/autogen/title", json={"content": code}, headers=headers)
+            resp = requests.post("http://localhost:5000/api/autogen/title", json={"content": code}, headers=headers)
             if resp.ok:
                 title = resp.json().get("title") or title
                 if title:
@@ -48,7 +48,7 @@ def create_snippet():
                 payload["language"] = language
             if title:
                 payload["title"] = title
-            resp = requests.post("http://localhost:5000/autogen/tags", json=payload, headers=headers)
+            resp = requests.post("http://localhost:5000/api/autogen/tags", json=payload, headers=headers)
             if resp.ok:
                 tags = resp.json().get("tags") or tags
                 if tags:
@@ -60,7 +60,7 @@ def create_snippet():
                 payload["language"] = language
             if title:
                 payload["title"] = title
-            resp = requests.post("http://localhost:5000/autogen/description", json=payload, headers=headers)
+            resp = requests.post("http://localhost:5000/api/autogen/description", json=payload, headers=headers)
             if resp.ok:
                 description = resp.json().get("description") or description
                 if description:
@@ -229,7 +229,7 @@ def update_snippet(snippet_id):
         if title == 'auto' or (not title and not snippet.get('title')):
             yn = input("\nAuto-generate title? [y/N]: ").strip().lower()
             if yn == 'y':
-                resp = requests.post("http://localhost:5000/autogen/title", json={"content": content_for_gen}, headers=headers)
+                resp = requests.post("http://localhost:5000/api/autogen/title", json={"content": content_for_gen}, headers=headers)
                 if resp.ok:
                     title = resp.json().get("title", "")
                     if title:
@@ -243,7 +243,7 @@ def update_snippet(snippet_id):
                     payload["language"] = lang_for_gen
                 if title_for_gen:
                     payload["title"] = title_for_gen
-                resp = requests.post("http://localhost:5000/autogen/tags", json=payload, headers=headers)
+                resp = requests.post("http://localhost:5000/api/autogen/tags", json=payload, headers=headers)
                 if resp.ok:
                     tags = resp.json().get("tags", "")
                     if tags:
@@ -257,7 +257,7 @@ def update_snippet(snippet_id):
                     payload["language"] = lang_for_gen
                 if title_for_gen:
                     payload["title"] = title_for_gen
-                resp = requests.post("http://localhost:5000/autogen/description", json=payload, headers=headers)
+                resp = requests.post("http://localhost:5000/api/autogen/description", json=payload, headers=headers)
                 if resp.ok:
                     description = resp.json().get("description", "")
                     if description:

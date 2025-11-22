@@ -6,7 +6,7 @@ from utils import TOKEN_FILE, console
 
 def register_user():
     """Register a new user."""
-    url = "http://localhost:5000/register"
+    url = "http://localhost:5000/api/register"
 
     email = input("Enter email: ")
     username = input("Enter username: ")
@@ -32,7 +32,7 @@ def register_user():
 
 def login_user():
     """Login a user and store JWT token to file."""
-    url = "http://localhost:5000/login"
+    url = "http://localhost:5000/api/login"
 
     username_or_email = input("Enter username or email: ")
     password = input("Enter password: ")

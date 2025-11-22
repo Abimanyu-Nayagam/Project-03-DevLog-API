@@ -93,7 +93,7 @@ export default function Entries({ apiHeaders, token }) {
     
     try {
       // Call backend autogen endpoint (to be implemented by other developer)
-      const res = await fetch(`${API_BASE}/autogen/title`, {
+      const res = await fetch(`${API_BASE}/api/autogen/title`, {
         method: 'POST',
         headers: apiHeaders(),
         body: JSON.stringify({ content })
@@ -125,7 +125,7 @@ export default function Entries({ apiHeaders, token }) {
     
     try {
       // Call backend autogen endpoint (to be implemented by other developer)
-      const res = await fetch(`${API_BASE}/autogen/tags`, {
+      const res = await fetch(`${API_BASE}/api/autogen/tags`, {
         method: 'POST',
         headers: apiHeaders(),
         body: JSON.stringify({ content })
@@ -416,7 +416,7 @@ export default function Entries({ apiHeaders, token }) {
   async function exportMarkdown(id) {
     // Fetch file with auth headers, then download as blob
     try {
-      const res = await fetch(`${API_BASE}/export-entry-md/v1/${id}`, {
+      const res = await fetch(`${API_BASE}/api/export-entry-md/v1/${id}`, {
         headers: apiHeaders() // Include auth token
       })
       if (res.ok) {
@@ -439,7 +439,7 @@ export default function Entries({ apiHeaders, token }) {
   async function exportJSON(id) {
     // Fetch file with auth headers, then download as blob
     try {
-      const res = await fetch(`${API_BASE}/export-entry-json/v1/${id}`, {
+      const res = await fetch(`${API_BASE}/api/export-entry-json/v1/${id}`, {
         headers: apiHeaders() // Include auth token
       })
       if (res.ok) {
